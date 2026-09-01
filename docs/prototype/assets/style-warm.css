@@ -63,21 +63,21 @@ a { color: inherit; text-decoration: none; }
 .article p { margin-bottom: 1.5em; color: var(--ink-2); }
 .article h2 { font-family: var(--kai); font-size: 23px; margin: 2em 0 1em; color: var(--ink); }
 .article h2::before { content: "❀ "; color: var(--sage); }
-.article blockquote { border: none; background: var(--sage-soft); border-radius: 14px; padding: 18px 24px; margin: 2em 0; color: #5F7048; font-family: var(--kai); font-size: 16.5px; }
+.article blockquote { border: none; background: var(--sage-soft); border-radius: 4px; padding: 18px 24px; margin: 2em 0; color: #5F7048; font-family: var(--kai); font-size: 16.5px; }
 .figure { margin: 2.4em 0; }
 .figure .polaroid { transform: rotate(-1.6deg); }
 .figure .polaroid:nth-of-type(even) { transform: rotate(1.4deg); }
 .figure figcaption { text-align: center; font-family: var(--kai); font-size: 13.5px; color: var(--gray); margin-top: 10px; }
 
-.mini-frame { position: relative; border-radius: 20px; border: 1px solid var(--hairline); box-shadow: var(--shadow); background: var(--card); overflow: hidden; }
-.mini-frame .map-inner { border-radius: 19px; overflow: hidden; }
+.mini-frame { position: relative; border-radius: 4px; border: 1px solid var(--hairline); box-shadow: var(--shadow); background: var(--card); overflow: hidden; }
+.mini-frame .map-inner { border-radius: 3px; overflow: hidden; }
 .mini-frame .tape { z-index: 5; top: -12px; }
 #mini-map { width: 100%; }
 .map-note { margin-top: 14px; font-size: 12.5px; color: var(--gray); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
 
 /* 按天行程：手账日程格 */
 .day-list { display: grid; gap: 10px; }
-.day-list .dl { display: grid; grid-template-columns: 64px 110px 1fr; gap: 16px; align-items: center; background: var(--card); border: 1px solid var(--hairline); border-radius: 14px; padding: 12px 18px; }
+.day-list .dl { display: grid; grid-template-columns: 64px 110px 1fr; gap: 16px; align-items: center; background: var(--card); border: 1px solid var(--hairline); border-radius: 4px; padding: 12px 18px; }
 .day-list .dl b { font-family: var(--kai); font-size: 21px; color: #fff; background: var(--sage); width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 .day-list .dl:nth-child(2n) b { background: var(--accent); }
 .day-list .dl .dt { font-size: 12.5px; color: var(--gray); }
@@ -97,7 +97,7 @@ a { color: inherit; text-decoration: none; }
 
 /* 上下篇 */
 .pn { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 64px; }
-.pn a { background: var(--card); border: 1px solid var(--hairline); border-radius: 14px; padding: 20px 24px; transition: transform .18s; }
+.pn a { background: var(--card); border: 1px solid var(--hairline); border-radius: 4px; padding: 20px 24px; transition: transform .18s; }
 .pn a:hover { transform: translateY(-3px); }
 .pn a.next { text-align: right; }
 .pn .lab { font-size: 11.5px; color: var(--gray); letter-spacing: .1em; }
@@ -128,7 +128,7 @@ a { color: inherit; text-decoration: none; }
 .section-head .tail { flex: 1; text-align: right; font-size: 12.5px; color: var(--gray); }
 
 /* ---------- 照片（真实图片 + 渐变兜底） ---------- */
-.ph { position: relative; overflow: hidden; display: block; background: #EFE7D5; border-radius: 12px; }
+.ph { position: relative; overflow: hidden; display: block; background: #EFE7D5; border-radius: 4px; }
 .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .ph::after {
   content: attr(data-label); position: absolute; left: 12px; bottom: 10px; z-index: 2;
@@ -166,7 +166,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- 统计：便签板 ---------- */
 .notes { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
-.note-card { background: var(--card); border: 1px solid var(--hairline); border-radius: 12px; padding: 18px 14px 14px; text-align: center; box-shadow: 0 4px 12px rgba(74,63,53,.06); position: relative; }
+.note-card { background: var(--card); border: 1px solid var(--hairline); border-radius: 4px; padding: 18px 14px 14px; text-align: center; box-shadow: 0 4px 12px rgba(74,63,53,.06); position: relative; }
 .note-card .v { font-family: var(--kai); font-size: clamp(26px, 3.2vw, 36px); line-height: 1.15; }
 .note-card .k { margin-top: 4px; font-size: 12px; color: var(--gray); }
 .note-card.c-orange .v { color: var(--accent); }
@@ -183,7 +183,7 @@ a { color: inherit; text-decoration: none; }
 .note-card .tape { top: -12px; left: 50%; transform: translateX(-50%) rotate(-3deg); width: 70px; height: 20px; }
 
 /* ---------- 登机牌特写 ---------- */
-.boarding { position: relative; background: var(--card); border: 1px solid var(--hairline); border-radius: 20px; box-shadow: var(--shadow); display: grid; grid-template-columns: 1.15fr 1fr; overflow: hidden; }
+.boarding { position: relative; background: var(--card); border: 1px solid var(--hairline); border-radius: 4px; box-shadow: var(--shadow); display: grid; grid-template-columns: 1.15fr 1fr; overflow: hidden; }
 .boarding .main { padding: clamp(18px, 3vw, 30px); }
 .boarding .main .meta { font-size: 12.5px; color: var(--gray); margin-bottom: 8px; }
 .boarding h3 { font-family: var(--kai); font-size: clamp(24px, 3vw, 33px); font-weight: 700; }
@@ -198,7 +198,7 @@ a { color: inherit; text-decoration: none; }
 .boarding .stub .val small { font-size: 13px; color: var(--gray); font-weight: 400; }
 .boarding .stub .barcode { margin-top: 10px; height: 44px; background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 5px, var(--ink) 5px 9px, transparent 9px 12px, var(--ink) 12px 13px, transparent 13px 17px); opacity: .8; border-radius: 3px; }
 .boarding .tape { top: -12px; right: 34px; transform: rotate(6deg); }
-.boarding .ph { border-radius: 14px; }
+.boarding .ph { border-radius: 4px; }
 
 /* ---------- 标签 ---------- */
 .tags { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -223,8 +223,8 @@ a { color: inherit; text-decoration: none; }
 .page-head .polaroid { position: absolute; right: var(--pad); top: clamp(30px, 5vw, 56px); width: 190px; transform: rotate(4deg); display: none; }
 @media (min-width: 900px) { .page-head .polaroid { display: block; } }
 
-.map-frame { position: relative; border-radius: 20px; border: 1px solid var(--hairline); box-shadow: var(--shadow); overflow: visible; background: var(--card); }
-.map-frame .map-inner { border-radius: 20px; overflow: hidden; }
+.map-frame { position: relative; border-radius: 4px; border: 1px solid var(--hairline); box-shadow: var(--shadow); overflow: visible; background: var(--card); }
+.map-frame .map-inner { border-radius: 4px; overflow: hidden; }
 #map { width: 100%; }
 .map-frame .tape { z-index: 5; }
 .map-frame .tape.tl2 { top: -13px; left: 6%; transform: rotate(-5deg); }
