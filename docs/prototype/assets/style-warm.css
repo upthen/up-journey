@@ -127,9 +127,14 @@ a { color: inherit; text-decoration: none; }
 .section-head h2 { font-family: var(--kai); font-size: clamp(24px, 3.2vw, 32px); font-weight: 700; }
 .section-head .tail { flex: 1; text-align: right; font-size: 12.5px; color: var(--gray); }
 
-/* ---------- 假照片 ---------- */
-.ph { position: relative; overflow: hidden; display: block; }
-.ph::after { content: attr(data-label); position: absolute; left: 12px; bottom: 10px; font-size: 11px; letter-spacing: .1em; color: rgba(255,253,247,.95); font-family: var(--kai); }
+/* ---------- 照片（真实图片 + 渐变兜底） ---------- */
+.ph { position: relative; overflow: hidden; display: block; background: #EFE7D5; border-radius: 12px; }
+.ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ph::after {
+  content: attr(data-label); position: absolute; left: 12px; bottom: 10px; z-index: 2;
+  font-size: 11px; letter-spacing: .12em; color: rgba(255,253,247,.95); font-family: var(--kai);
+  text-shadow: 0 1px 8px rgba(58,42,26,.65), 0 0 2px rgba(58,42,26,.5);
+}
 .r-32 { aspect-ratio: 3/2; } .r-43 { aspect-ratio: 4/3; } .r-11 { aspect-ratio: 1/1; }
 .ph-a { background: linear-gradient(160deg,#E9CBA6 0%,#CE9663 48%,#A96B3F 100%); }
 .ph-b { background: linear-gradient(155deg,#F2DDB8 0%,#E0BC7E 55%,#B98F4E 100%); }
