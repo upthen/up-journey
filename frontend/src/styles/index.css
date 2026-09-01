@@ -1,0 +1,5 @@
+/* Tailwind v4：只取 theme + utilities（跳过 preflight，避免与 v4 原型样式互相重置）。
+   展示端排版以 flow.css（v4 像素蓝本）为准，Tailwind 负责少量原子间距/布局工具。 */
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);

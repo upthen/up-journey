@@ -20,8 +20,14 @@ __pycache__/
 .ruff_cache/
 
 # Thumbnail cache (generated at runtime, never committed)
-data/cache/
+**/data/cache/
 
 # Misc
 .DS_Store
 *.log
+
+# TS build info
+*.tsbuildinfo
+
+# 本地运行状态（演示相册副本 + SQLite）
+backend/data/

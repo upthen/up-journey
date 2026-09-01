@@ -1,0 +1,29 @@
+# 本地开发编排：只起 MySQL 8（Docker Desktop），api 与前端本机直跑。
+# 用法：docker compose -f deploy/docker-compose.dev.yml up -d
+# 后端 .env 里 DATABASE_URL=mysql+pymysql://upjourney:upjourney@127.0.0.1:33061/upjourney?charset=utf8mb4
+name: up-journey-dev
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: devroot
+      MYSQL_DATABASE: upjourney
+      MYSQL_USER: upjourney
+      MYSQL_PASSWORD: upjourney
+    ports:
+      - "33061:3306" # 宿主机 33061，避免与本地已有 MySQL 冲突
+    volumes:
+      - mysql_dev_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  mysql_dev_data:
