@@ -1,9 +1,25 @@
-/* up-journey 原型 · 地图渲染（ECharts，数据为假数据） */
+/* up-journey 原型 · 地图渲染（ECharts，数据为假数据）
+   页面可先设置 window.UJ_MAP_THEME 覆盖配色（温暖手账风 / 深色画廊风等） */
 (function () {
-  var ACCENT = '#2F4A5C';
+  var BASE = (document.currentScript && document.currentScript.src)
+    ? new URL('.', document.currentScript.src).href
+    : '';
+
+  var T = Object.assign({
+    visited3: '#243A49',   // ≥3 次
+    visited2: '#3D5D72',   // 2 次
+    visited1: '#7A94A5',   // 1 次
+    none:     '#EFECE5',   // 未去
+    border:   '#FAF9F6',
+    cityDot:  '#B0532F',
+    route:    '#B0532F',
+    label:    '#45413C',
+    legend:   '#8A8378',
+    emphasis: '#D8E2E9'
+  }, window.UJ_MAP_THEME || {});
 
   function loadChina(cb) {
-    fetch('assets/china.json')
+    fetch(BASE + 'china.json')
       .then(function (r) { return r.json(); })
       .then(cb)
       .catch(function (e) { console.error('GeoJSON 加载失败', e); });
@@ -41,24 +57,24 @@
         visualMap: {
           type: 'piecewise',
           pieces: [
-            { gt: 2, label: '去过 3 次以上', color: '#243A49' },
-            { gt: 1, lte: 2, label: '去过 2 次', color: '#3D5D72' },
-            { gt: 0, lte: 1, label: '去过 1 次', color: '#7A94A5' },
-            { value: 0, label: '还没去过', color: '#EFECE5' }
+            { gt: 2, label: '去过 3 次以上', color: T.visited3 },
+            { gt: 1, lte: 2, label: '去过 2 次', color: T.visited2 },
+            { gt: 0, lte: 1, label: '去过 1 次', color: T.visited1 },
+            { value: 0, label: '还没去过', color: T.none }
           ],
           left: 16,
           bottom: 24,
           itemWidth: 12,
           itemHeight: 12,
-          textStyle: { color: '#8A8378', fontSize: 11 },
+          textStyle: { color: T.legend, fontSize: 11 },
           selectedMode: false
         },
         geo: {
           map: 'china',
           roam: true,
           scaleLimit: { min: 1, max: 8 },
-          itemStyle: { borderColor: '#FAF9F6', borderWidth: 1 },
-          emphasis: { label: { color: '#1A1A1A' }, itemStyle: { areaColor: '#D8E2E9' } }
+          itemStyle: { borderColor: T.border, borderWidth: 1 },
+          emphasis: { label: { color: T.label }, itemStyle: { areaColor: T.emphasis } }
         },
         series: [
           {
@@ -73,11 +89,11 @@
             type: 'effectScatter',
             coordinateSystem: 'geo',
             symbolSize: function (v) { return 6 + v[2] * 2; },
-            itemStyle: { color: '#B0532F' },
+            itemStyle: { color: T.cityDot },
             rippleEffect: { scale: 2.6, brushType: 'stroke' },
             label: {
               show: true, position: 'right', distance: 6,
-              formatter: '{b}', color: '#45413C', fontSize: 11,
+              formatter: '{b}', color: T.label, fontSize: 11,
               fontFamily: 'Songti SC, serif'
             },
             labelLayout: { hideOverlap: true },
@@ -89,8 +105,8 @@
             name: '2024 云南环线',
             type: 'lines',
             coordinateSystem: 'geo',
-            effect: { show: true, period: 5, trailLength: 0.4, symbol: 'arrow', symbolSize: 6, color: '#B0532F' },
-            lineStyle: { color: '#B0532F', width: 1.4, opacity: 0.7, curveness: 0.25 },
+            effect: { show: true, period: 5, trailLength: 0.4, symbol: 'arrow', symbolSize: 6, color: T.route },
+            lineStyle: { color: T.route, width: 1.4, opacity: 0.7, curveness: 0.25 },
             data: [
               { coords: [[102.83, 24.88], [100.23, 25.60]] },
               { coords: [[100.23, 25.60], [100.24, 26.87]] }
@@ -127,10 +143,10 @@
           roam: true,
           scaleLimit: { min: 5, max: 18 },
           itemStyle: {
-            areaColor: '#EFECE5',
-            borderColor: '#FAF9F6', borderWidth: 1
+            areaColor: T.none,
+            borderColor: T.border, borderWidth: 1
           },
-          emphasis: { label: { show: true, color: '#8A8378' }, itemStyle: { areaColor: '#D8E2E9' } }
+          emphasis: { label: { show: true, color: T.legend }, itemStyle: { areaColor: T.emphasis } }
         },
         series: [
           {
@@ -138,10 +154,10 @@
             type: 'scatter',
             coordinateSystem: 'geo',
             symbolSize: 10,
-            itemStyle: { color: ACCENT },
+            itemStyle: { color: T.visited3 },
             label: {
               show: true, position: 'top', distance: 8,
-              formatter: '{b}', color: '#1A1A1A', fontSize: 12,
+              formatter: '{b}', color: T.label, fontSize: 12,
               fontFamily: 'Songti SC, serif', fontWeight: 600
             },
             labelLayout: { hideOverlap: true },
@@ -151,8 +167,8 @@
             name: '路线',
             type: 'lines',
             coordinateSystem: 'geo',
-            lineStyle: { color: ACCENT, width: 1.6, opacity: 0.75, curveness: 0.2, type: 'dashed' },
-            effect: { show: true, period: 4, trailLength: 0.5, symbol: 'arrow', symbolSize: 6, color: ACCENT },
+            lineStyle: { color: T.cityDot, width: 1.6, opacity: 0.75, curveness: 0.2, type: 'dashed' },
+            effect: { show: true, period: 4, trailLength: 0.5, symbol: 'arrow', symbolSize: 6, color: T.cityDot },
             data: [
               { coords: [[102.67, 24.98], [100.16, 25.69]] },
               { coords: [[100.16, 25.69], [100.15, 25.72]] },

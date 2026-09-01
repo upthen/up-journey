@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>足迹总览 · 游迹手账（温暖手账风）</title>
+<link rel="stylesheet" href="../assets/style-warm.css">
+<script>
+  window.UJ_MAP_THEME = {
+    visited3: '#B4652F', visited2: '#D9A05B', visited1: '#E3C9A8',
+    none: '#EFE7D5', border: '#FBF6EA', cityDot: '#A64B2A', route: '#A64B2A',
+    label: '#5A4C3C', legend: '#8C7B65', emphasis: '#F0E3C8'
+  };
+</script>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="masthead" href="index.html"><span class="zh">游迹手账</span><span class="en">Up Journey</span></a>
+    <input type="checkbox" id="navtoggle" class="nav-toggle">
+    <label class="nav-burger" for="navtoggle"><span></span><span></span><span></span></label>
+    <nav class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="footprints.html" class="active">足迹</a>
+    </nav>
+  </div>
+</header>
+
+<!-- 页头（拍立得别在标题旁） -->
+<section class="page-head wrap">
+  <span class="pill">FOOTPRINTS · 2013—2024</span>
+  <h1>足迹总览</h1>
+  <p class="sub">10 个省级行政区 · 9 座城市 · 137 个景点 —— 地图可拖拽缩放，戳一戳小飞机。</p>
+  <div class="polaroid">
+    <span class="tape" style="top:-13px; left:50%; transform:translateX(-50%) rotate(-3deg);"></span>
+    <div class="ph ph-b r-43" data-label="2023 · 青岛"></div>
+    <div class="cap">赶海的收获</div>
+  </div>
+</section>
+
+<!-- 地图（胶带贴角） -->
+<section class="wrap">
+  <div class="map-frame">
+    <span class="tape tl2"></span><span class="tape tr2"></span>
+    <div class="map-inner"><div id="map" style="height:540px;"></div></div>
+  </div>
+</section>
+
+<!-- 手账页：拍立得瀑布 -->
+<section class="wrap" style="margin-top:clamp(56px,8vw,88px);">
+  <div class="section-head">
+    <span class="kicker">Travel Notes</span>
+    <h2>手账页</h2>
+    <span class="tail">共 45 篇</span>
+  </div>
+
+  <div class="falls">
+    <a class="polaroid" href="#">
+      <span class="tape"></span>
+      <div class="ph ph-a r-32" data-label="2024 · 洱海"></div>
+      <span class="cap"><b>云南环线：从滇池到玉龙</b>
+        <span class="d">2024.05.01 — 05.07 · 昆明 → 大理 → 丽江</span>
+        <span class="s">七天一千二百公里，滇池的海鸥、洱海的日落、玉龙的初雪。哥哥醒来第一句话是"云在我脚下"。</span>
+      </span>
+      <div class="tags"><span class="tag solid">亲子</span><span class="tag">自驾</span><span class="tag">高原</span></div>
+    </a>
+    <a class="polaroid" href="#">
+      <span class="tape"></span>
+      <div class="ph ph-c r-32" data-label="2023 · 四姑娘山"></div>
+      <span class="cap"><b>四姑娘山下的星空</b>
+        <span class="d">2023.10.02 — 10.06 · 成都 → 四姑娘山</span>
+        <span class="s">翻过巴朗山垭口的那一刻，云海在脚下铺开。夜里的高原冷得刺骨，星星却多到让人生出敬畏。</span>
+      </span>
+      <div class="tags"><span class="tag solid">自驾</span><span class="tag">高原</span></div>
+    </a>
+    <a class="polaroid" href="#">
+      <span class="tape"></span>
+      <div class="ph ph-b r-32" data-label="2023 · 青岛"></div>
+      <span class="cap"><b>赶海的小孩</b>
+        <span class="d">2023.08.12 — 08.15 · 山东 · 青岛</span>
+        <span class="s">退潮后的礁石滩是一座没有围墙的自然博物馆。哥哥蹲了两小时不肯走，带回一只寄居蟹和满裤腿的沙。</span>
+      </span>
+      <div class="tags"><span class="tag solid">亲子</span><span class="tag">海滨</span></div>
+    </a>
+    <a class="polaroid" href="#">
+      <span class="tape"></span>
+      <div class="ph ph-f r-32" data-label="2018 · 京都"></div>
+      <span class="cap"><b>落樱时节，又逢君</b>
+        <span class="d">2018.04.01 — 04.08 · 日本 · 关西</span>
+        <span class="s">哲学之道的樱吹雪落了满肩。第一次带哥哥出国，他学会了说 arigatou。</span>
+      </span>
+      <div class="tags"><span class="tag solid">境外</span><span class="tag">春樱</span></div>
+    </a>
+  </div>
+</section>
+
+<!-- 锯齿时间轴 -->
+<section class="wrap" style="margin-top:clamp(56px,8vw,88px);">
+  <div class="section-head">
+    <span class="kicker">Timeline</span>
+    <h2>旅行时间轴</h2>
+    <span class="tail">2013 — 2024</span>
+  </div>
+
+  <div class="tl">
+    <div class="tl-year">2024</div>
+    <article class="tl-item">
+      <div class="date">05.01 — 05.07</div>
+      <div class="t"><a href="#">云南环线：从滇池到玉龙</a></div>
+      <div class="d">昆明 → 大理 → 丽江 · 一家三口 · 7 天</div>
+      <div class="tl-days">
+        <div class="day"><b>D1</b><span>抵昆明，海埂大坝喂红嘴鸥</span></div>
+        <div class="day"><b>D2</b><span>滇池西山 → 动车赴大理</span></div>
+        <div class="day"><b>D3</b><span>洱海 S 湾骑行，等一场日落</span></div>
+        <div class="day"><b>D4</b><span>崇圣寺三塔 · 大理古城</span></div>
+        <div class="day"><b>D5</b><span>丽江古城 · 狮子山万古楼</span></div>
+        <div class="day"><b>D6</b><span>玉龙雪山 · 蓝月谷</span></div>
+        <div class="day"><b>D7</b><span>返程 · 斑斓的七彩云南</span></div>
+      </div>
+    </article>
+
+    <div class="tl-year">2023</div>
+    <article class="tl-item">
+      <div class="date">10.02 — 10.06</div>
+      <div class="t"><a href="#">四姑娘山下的星空</a></div>
+      <div class="d">成都 → 四姑娘山 · 双桥沟 · 夫妻二人 · 5 天</div>
+    </article>
+    <article class="tl-item">
+      <div class="date">08.12 — 08.15</div>
+      <div class="t"><a href="#">赶海的小孩</a></div>
+      <div class="d">青岛 · 礁石滩与啤酒屋 · 一家三口 · 4 天</div>
+    </article>
+
+    <div class="tl-year">2018</div>
+    <article class="tl-item">
+      <div class="date">04.01 — 04.08</div>
+      <div class="t"><a href="#">落樱时节，又逢君</a></div>
+      <div class="d">日本 · 关西：大阪 — 京都 — 奈良 · 一家三口 · 8 天</div>
+    </article>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div><span class="zh">游迹手账</span></div>
+    <div class="r">一个家庭的旅行志 · 自托管于家中的 NAS · <a href="../compare.html">原型风格对比</a></div>
+  </div>
+  <div class="wrap"><div class="tapes"></div></div>
+</footer>
+
+<script src="../assets/echarts.min.js"></script>
+<script src="../assets/map.js"></script>
+</body>
+</html>
