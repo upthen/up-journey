@@ -291,3 +291,50 @@ img { display: block; max-width: 100%; }
   .nav-toggle:checked ~ .nav-links { display: flex; }
   .hint { white-space: normal; text-align: center; max-width: 86vw; }
 }
+
+/* ---------- 编年时间轴（timeline.html） ---------- */
+.tl { position: relative; padding-left: 34px; max-width: 780px; }
+.tl::before { content: ""; position: absolute; left: 9px; top: 10px; bottom: 10px; width: 2px; border-radius: 2px; background: linear-gradient(180deg, var(--coral), #F3C9B8 30%, var(--hairline) 85%); }
+.tl-group { position: relative; }
+.tl-group:not(:first-child) { margin-top: 44px; }
+.tl-year { position: sticky; top: 78px; z-index: 2; display: flex; align-items: baseline; gap: 14px; padding: 8px 18px 8px 6px; margin: 0 -18px 16px -6px; width: fit-content; background: rgba(248,246,242,.92); backdrop-filter: blur(6px); border-radius: 0 999px 999px 0; font-size: clamp(24px,3vw,30px); font-weight: 700; letter-spacing: -.02em; }
+.tl-year::before { content: ""; position: absolute; left: -31px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 4px solid var(--coral); box-shadow: var(--shadow-sm); }
+.tl-year small { font-size: 12.5px; font-weight: 500; color: var(--gray); letter-spacing: .08em; white-space: nowrap; }
+.tl-card { background: var(--card); border-radius: var(--r-lg); box-shadow: var(--shadow); padding: 20px 24px; margin-bottom: 14px; transition: transform .2s, box-shadow .2s; }
+.tl-card:hover { transform: translateX(4px); box-shadow: 0 2px 6px rgba(31,42,51,.05), 0 14px 34px rgba(31,42,51,.12); }
+.tl-card .row { display: grid; grid-template-columns: 150px 1fr; gap: 18px; }
+.tl-card .cov { display: block; border-radius: var(--r-md); overflow: hidden; aspect-ratio: 4/3; box-shadow: var(--shadow-sm); }
+.tl-card .cov img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s; }
+.tl-card:hover .cov img { transform: scale(1.04); }
+.tl-card .date { font-size: 12px; color: var(--gray); letter-spacing: .04em; font-feature-settings: "tnum"; }
+.tl-card .t { font-size: 18.5px; font-weight: 700; margin: 5px 0 4px; }
+.tl-card .t a:hover { color: var(--coral-deep); }
+.tl-card .d { font-size: 13.5px; color: var(--ink-2); }
+.tl-card .foot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.tl-card .foot .tags { display: flex; gap: 6px; }
+.tl-card .foot .tag { font-size: 11.5px; padding: 3px 12px; border-radius: 999px; background: var(--lake-soft); color: var(--lake); font-weight: 600; }
+.tl-card .foot .tag.hot { background: var(--coral-soft); color: var(--coral-deep); }
+.tl-card .foot .members span { width: 26px; height: 26px; border-radius: 50%; background: var(--lake-soft); color: var(--lake); font-size: 11.5px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; border: 2px solid #fff; margin-left: -8px; }
+.tl-card .foot .members span:first-child { margin-left: 0; }
+.tl-days { margin-top: 14px; border-top: 1px dashed var(--hairline); padding-top: 12px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px 26px; }
+.tl-days .day { font-size: 12.5px; color: var(--ink-2); padding: 3px 0; display: flex; gap: 10px; }
+.tl-days .day b { color: var(--coral); font-weight: 700; min-width: 2.1em; font-feature-settings: "tnum"; }
+.tl-end { position: relative; margin-top: 30px; padding: 4px 0 10px; }
+.tl-end .dot { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 4px solid var(--hairline); margin-left: -31px; }
+.tl-end p { margin-top: 12px; font-size: 14px; color: var(--gray); }
+.tl-end a { color: var(--coral-deep); font-weight: 600; }
+
+/* 滚动渐显 */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+@media (max-width: 640px) {
+  .tl { padding-left: 26px; }
+  .tl-year { top: 70px; font-size: 22px; padding-right: 12px; }
+  .tl-year::before { left: -23px; width: 12px; height: 12px; border-width: 3px; }
+  .tl-card .row { grid-template-columns: 1fr; }
+  .tl-card .cov { aspect-ratio: 16/9; }
+  .tl-days { grid-template-columns: 1fr; }
+  .tl-end .dot { margin-left: -23px; }
+}
