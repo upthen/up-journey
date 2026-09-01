@@ -111,7 +111,9 @@ Status: ready-for-agent
 
 ## Testing Decisions
 
-待定——测试接缝（API TestClient + 测试库选型 / 冒烟策略）将在随后的技术方案设计讨论中确定后补充到此节。
+- 唯一测试接缝 = 后端 HTTP API（FastAPI TestClient）：CRUD、统计口径、足迹聚合、图片管线（缩略图生成、HEIC 转码、EXIF 旋转、目录穿越拦截、404）全部从 API 表面验证，只测外部行为不测实现。
+- 测试库用 SQLite 内存（毫秒级、零依赖）；部署脚本对 NAS 上真 MySQL 实例跑 health/stats 冒烟，验证方言无偏差。
+- 前端不写自动化测试：靠高保真原型对齐 + 浏览器人工验收（Playwright E2E 列入 v2 候选）。
 
 ## Out of Scope
 

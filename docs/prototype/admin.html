@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理端 · 游迹</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="admin">
+
+<div class="ad-top">
+  <div class="brand">
+    <span class="zh">游迹</span><span class="badge">管理端</span>
+  </div>
+  <a href="index.html" style="font-size:13px;color:#4B5563;">返回展示端 →</a>
+</div>
+
+<div class="ad-layout">
+  <aside class="ad-side">
+    <nav class="ad-menu">
+      <a class="on" href="admin.html">🗂 旅行管理</a>
+      <a href="admin.html">👨‍👩‍👦 家庭成员</a>
+      <a href="admin.html">🏷 标签管理</a>
+    </nav>
+  </aside>
+
+  <main class="ad-main">
+    <div class="ad-breadcrumb">旅行管理 / 编辑：2024 云南环线</div>
+
+    <!-- 基本信息 -->
+    <section class="ad-panel">
+      <h4>基本信息</h4>
+      <p class="hint">标题用于展示与卡片；slug 决定详情页地址，留空按标题自动生成。</p>
+      <div class="f-row"><label>标题 <span class="req"></span></label><input class="ipt" value="云南环线：从滇池到玉龙"></div>
+      <div class="f-row"><label>Slug</label><input class="ipt" value="yunnan-loop-2024" placeholder="自动生成"></div>
+      <div class="f-row"><label>起止日期 <span class="req"></span></label>
+        <div class="f-2col">
+          <input class="ipt" type="date" value="2024-05-01">
+          <input class="ipt" type="date" value="2024-05-07">
+        </div>
+      </div>
+      <div class="f-row"><label>状态</label>
+        <div class="f-2col">
+          <select class="ipt"><option>已发布</option><option>草稿（展示端不可见）</option></select>
+          <select class="ipt"><option>境内</option><option>境外 · 需填国家</option></select>
+        </div>
+      </div>
+      <div class="f-row"><label>卡片摘要</label>
+        <textarea class="ipt" rows="3">七天一千二百公里。我们在滇池边喂了海鸥，在洱海的 S 湾等到一场日落，最后一天哥哥在玉龙雪山的缆车上睡着了——这是他第一次见到真正的雪。</textarea></div>
+    </section>
+
+    <!-- 封面 -->
+    <section class="ad-panel">
+      <h4>封面</h4>
+      <p class="hint">从本旅行已配置相册目录的图片中挑选一张作为卡片与首页封面。</p>
+      <div class="f-row"><label>选择封面</label>
+        <div class="picker-grid">
+          <div class="pk ph ph-a r-43 on" data-label=""></div>
+          <div class="pk ph ph-f r-43" data-label=""></div>
+          <div class="pk ph ph-b r-43" data-label=""></div>
+          <div class="pk ph ph-c r-43" data-label=""></div>
+          <div class="pk ph ph-d r-43" data-label=""></div>
+          <div class="pk ph ph-e r-43" data-label=""></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 城市与路线 -->
+    <section class="ad-panel">
+      <h4>城市与路线</h4>
+      <p class="hint">按到访顺序添加城市，地图路线与统计由此生成；顺序可拖拽调整。</p>
+      <div class="f-row"><label>途经城市</label>
+        <div class="chips">
+          <span class="chip on">1 · 云南省 昆明市</span>
+          <span class="chip on">2 · 云南省 大理白族自治州</span>
+          <span class="chip on">3 · 云南省 丽江市</span>
+          <span class="chip add">＋ 添加城市（搜索省份 / 城市）</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 景点与相册 -->
+    <section class="ad-panel">
+      <h4>景点与相册目录</h4>
+      <p class="hint">相册目录填 NAS 共享相册内的子目录（相对路径），保存后实时扫描，无需上传图片。</p>
+      <table class="ad-table">
+        <thead><tr><th style="width:130px;">景点名称</th><th style="width:150px;">所属城市</th><th>相册目录</th><th style="width:170px;">精确坐标</th><th style="width:110px;">操作</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><input class="ipt" value="滇池 · 海埂大坝"></td>
+            <td><select class="ipt"><option>昆明</option><option>大理</option><option>丽江</option></select></td>
+            <td><input class="ipt" value="2024云南/昆明滇池"></td>
+            <td><span class="link-btn">🗺 地图选点</span> <span style="color:#98A2B3;font-size:12px;">跟随城市中心</span></td>
+            <td><span class="link-btn">删除</span></td>
+          </tr>
+          <tr>
+            <td><input class="ipt" value="洱海"></td>
+            <td><select class="ipt"><option>大理</option></select></td>
+            <td><input class="ipt" value="2024云南/大理洱海"></td>
+            <td><span style="font-size:12.5px;color:#364152;">100.18, 25.75</span> <span class="link-btn">清除</span></td>
+            <td><span class="link-btn">删除</span></td>
+          </tr>
+          <tr>
+            <td><input class="ipt" value="玉龙雪山"></td>
+            <td><select class="ipt"><option>丽江</option></select></td>
+            <td><input class="ipt" value="2024云南/玉龙雪山"></td>
+            <td><span style="font-size:12.5px;color:#364152;">100.20, 27.10</span> <span class="link-btn">清除</span></td>
+            <td><span class="link-btn">删除</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin-top:10px;"><span class="link-btn">＋ 添加景点</span></p>
+    </section>
+
+    <!-- 按天行程 -->
+    <section class="ad-panel">
+      <h4>按天行程</h4>
+      <p class="hint">对应详情页"按天行程"与总览页时间轴的天级子节点，可留空。</p>
+      <table class="ad-table">
+        <thead><tr><th style="width:64px;">天</th><th style="width:150px;">日期</th><th>当天行程</th><th>备注</th><th style="width:70px;">操作</th></tr></thead>
+        <tbody>
+          <tr><td>D1</td><td><input class="ipt" type="date" value="2024-05-01"></td><td><input class="ipt" value="抵昆明 · 海埂大坝喂红嘴鸥"></td><td><input class="ipt" value="晚宿翠湖旁"></td><td><span class="link-btn">删除</span></td></tr>
+          <tr><td>D2</td><td><input class="ipt" type="date" value="2024-05-02"></td><td><input class="ipt" value="西山龙门 → 动车赴大理"></td><td><input class="ipt" value=""></td><td><span class="link-btn">删除</span></td></tr>
+          <tr><td>D3</td><td><input class="ipt" type="date" value="2024-05-03"></td><td><input class="ipt" value="洱海 S 湾骑行 · 喜洲古镇"></td><td><input class="ipt" value=""></td><td><span class="link-btn">删除</span></td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:10px;"><span class="link-btn">＋ 添加一天</span></p>
+    </section>
+
+    <!-- 成员与标签 -->
+    <section class="ad-panel">
+      <h4>同行成员与标签</h4>
+      <p class="hint">成员与标签在左侧菜单里维护，这里只做勾选。</p>
+      <div class="f-row"><label>同行成员</label>
+        <div class="chips">
+          <span class="chip on">爸爸</span>
+          <span class="chip on">妈妈</span>
+          <span class="chip on">哥哥</span>
+          <span class="chip">妹妹</span>
+        </div>
+      </div>
+      <div class="f-row" style="margin-bottom:0;"><label>标签</label>
+        <div class="chips">
+          <span class="chip on">亲子</span>
+          <span class="chip on">自驾</span>
+          <span class="chip">海滨</span>
+          <span class="chip">高原</span>
+          <span class="chip">徒步</span>
+          <span class="chip add">＋ 新标签</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 游记正文 -->
+    <section class="ad-panel">
+      <h4>游记正文</h4>
+      <p class="hint">富文本编辑；「相册插图」从本旅行已配置的相册目录中选图插入，图片仍存于 NAS 相册。</p>
+      <div class="editor">
+        <div class="editor-bar">
+          <button><b>B</b></button><button><i>I</i></button><button>H2</button>
+          <button>❝ 引用</button><button>• 列表</button><button>🖼 插入图片</button>
+          <button class="ins">📁 相册插图</button>
+        </div>
+        <div class="editor-area" contenteditable="true">出发前一晚，哥哥把行李箱开了又关、关了又开，最后塞进去一只望远镜和三包海鸥食……</div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="ad-actions">
+  <button class="ad-btn">保存草稿</button>
+  <button class="ad-btn primary">发 布</button>
+</div>
+
+<script>
+  /* 原型交互：chips / 封面选择（真实实现在 Vue + Element Plus 中） */
+  document.addEventListener('click', function (e) {
+    var chip = e.target.closest('.chip');
+    if (chip && !chip.classList.contains('add')) chip.classList.toggle('on');
+    var pk = e.target.closest('.pk');
+    if (pk) {
+      document.querySelectorAll('.pk').forEach(function (p) { p.classList.remove('on'); });
+      pk.classList.add('on');
+    }
+  });
+</script>
+</body>
+</html>
