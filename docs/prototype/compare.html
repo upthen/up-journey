@@ -6,27 +6,26 @@
 <title>原型风格对比 · up-journey</title>
 <link rel="stylesheet" href="assets/style.css">
 <style>
-  .winner { border: 1px solid var(--accent); background: #fff; display: grid; grid-template-columns: 1.1fr 1fr; overflow: hidden; }
-  .winner .shot { min-height: 300px; position: relative; background:
-    radial-gradient(#EADFC8 1.5px, transparent 1.5px) 0 0/22px 22px,
-    linear-gradient(150deg,#F2DDB8 0%,#E0BC7E 55%,#B98F4E 100%); }
-  .winner .shot .t { position: absolute; left: 16px; bottom: 12px; color: #fff; font-family: var(--serif); font-size: 16px; letter-spacing: .1em; text-shadow: 0 1px 8px rgba(0,0,0,.45); }
-  .winner .body { padding: clamp(24px, 3vw, 40px); }
-  .crown { display: inline-block; font-size: 11px; color: #fff; background: var(--accent); padding: 3px 14px; border-radius: 999px; letter-spacing: .14em; margin-bottom: 12px; }
-  .winner h3 { font-family: var(--serif); font-size: 24px; font-weight: 700; }
-  .winner .en { font-size: 10.5px; letter-spacing: .24em; color: var(--gray); text-transform: uppercase; margin: 2px 0 12px; }
-  .winner p { font-size: 13.5px; color: var(--ink-2); line-height: 1.75; max-width: 34em; }
-  .swatches { display: flex; gap: 6px; margin: 14px 0 18px; }
-  .swatches i { width: 22px; height: 22px; border-radius: 4px; border: 1px solid rgba(0,0,0,.08); }
-  .winner .links { display: flex; gap: 18px; padding-top: 16px; border-top: 1px solid var(--hairline); font-size: 13.5px; flex-wrap: wrap; }
-  .winner .links a { color: var(--accent); }
-  .winner .links a:hover { text-decoration: underline; text-underline-offset: 3px; }
-  .archived { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
-  .mini-card { border: 1px dashed var(--hairline); padding: 14px 18px; background: #FBFAF7; }
-  .mini-card h4 { font-family: var(--serif); font-size: 15px; }
-  .mini-card span { display: block; font-size: 12px; color: var(--gray); margin: 3px 0 8px; }
+  .finals { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .style-card { border: 1px solid var(--hairline); background: #fff; display: flex; flex-direction: column; transition: transform .2s, box-shadow .2s; }
+  .style-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(31,42,51,.12); }
+  .style-card .shot { aspect-ratio: 16/10; position: relative; overflow: hidden; }
+  .style-card .shot .t { position: absolute; left: 14px; bottom: 10px; color: #fff; font-family: var(--serif); font-size: 15px; letter-spacing: .1em; text-shadow: 0 1px 8px rgba(0,0,0,.45); }
+  .style-card .body { padding: 18px 20px 20px; display: flex; flex-direction: column; flex: 1; }
+  .style-card h3 { font-family: var(--serif); font-size: 20px; font-weight: 700; }
+  .style-card .en { font-size: 10.5px; letter-spacing: .24em; color: var(--gray); text-transform: uppercase; margin: 2px 0 10px; }
+  .style-card p { font-size: 13.5px; color: var(--ink-2); line-height: 1.75; }
+  .swatches { display: flex; gap: 6px; margin: 12px 0 14px; }
+  .swatches i { width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(0,0,0,.08); }
+  .style-card .links { margin-top: auto; display: flex; gap: 16px; padding-top: 14px; border-top: 1px solid var(--hairline); font-size: 13px; }
+  .style-card .links a { color: var(--accent); }
+  .badge-v3 { font-size: 10.5px; color: #fff; background: #E8683A; padding: 2px 10px; border-radius: 999px; margin-left: 8px; vertical-align: 3px; }
+  .archived { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px; }
+  .mini-card { border: 1px dashed var(--hairline); padding: 12px 16px; background: #FBFAF7; }
+  .mini-card h4 { font-family: var(--serif); font-size: 14.5px; }
+  .mini-card span { display: block; font-size: 12px; color: var(--gray); margin: 2px 0 6px; }
   .mini-card a { font-size: 12.5px; color: var(--accent); }
-  @media (max-width: 900px) { .winner { grid-template-columns: 1fr; } .archived { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) { .finals, .archived { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -35,8 +34,8 @@
   <div class="nav-inner">
     <a class="masthead" href="index.html"><span class="zh">游迹</span><span class="en">Up Journey</span></a>
     <nav class="nav-links">
-      <a href="warm/index.html">定稿：手账</a>
-      <a href="index.html">杂志</a>
+      <a href="modern/index.html">暖现代 v3</a>
+      <a href="warm/index.html">手账 A</a>
       <a href="gallery/index.html">画廊</a>
     </nav>
   </div>
@@ -44,50 +43,64 @@
 
 <section class="wrap" style="padding-top:clamp(48px,7vw,80px);">
   <div class="section-head">
-    <span class="kicker">Decision</span>
-    <h2>视觉方向定稿</h2>
-    <span class="tail">2026.09</span>
+    <span class="kicker">Final Round</span>
+    <h2>两版决赛：手账拼贴 vs 产品级暖现代</h2>
+    <span class="tail">各三页</span>
   </div>
+  <p style="max-width:46em;color:var(--ink-2);font-size:15px;margin:-12px 0 32px;">
+    v3 按 Polarsteps 级产品语言重做：米白底、无边框大圆角软阴影、大照片当主角、地图浮岛统计。手账 A 版保留此前所有打磨（真实照片、细边框、小圆角）。
+  </p>
 
-  <div class="winner">
-    <div class="shot"><span class="t">拼贴桌面 · 热闹手作感</span></div>
-    <div class="body">
-      <span class="crown">✓ 最终定稿</span>
-      <h3>温暖手账风 · A 拼贴版</h3>
-      <p class="en">Warm Scrapbook</p>
-      <p>米纸圆点纹理上，贴满拍立得、和纸胶带与三色便签；特写是一张登机牌，时间轴左右交替贴着走。装饰密度即气质——这就是我们的家庭旅行手账。详见 ADR-0001。</p>
-      <div class="swatches"><i style="background:#F6EFE3;"></i><i style="background:#4A3F35;"></i><i style="background:#C4622D;"></i><i style="background:#8A9B6E;"></i><i style="background:#E4C98F;"></i></div>
-      <div class="links">
-        <a href="warm/index.html">首页</a>
-        <a href="warm/footprints.html">足迹总览</a>
-        <a href="warm/trip.html">旅行详情</a>
-        <a href="admin.html">管理端（不随风格）</a>
+  <div class="finals">
+    <div class="style-card" style="border-color:#E8683A;">
+      <div class="shot" style="background:linear-gradient(160deg,#F6C89E 0%,#E8875A 55%,#C4502A 100%);"><span class="t">照片当主角 · Polarsteps 基准</span></div>
+      <div class="body">
+        <h3>产品级暖现代<span class="badge-v3">v3 · 新</span></h3>
+        <p class="en">Warm Modern</p>
+        <p>米白纸感底、白卡片无边框大圆角软阴影、珊瑚橘强调 + 深湖蓝辅助；全幅照片 Hero、统计数字带、地图浮岛统计、大图卡流、侧栏速览卡。像一款真正的产品。</p>
+        <div class="swatches"><i style="background:#F8F6F2;"></i><i style="background:#FFFFFF;"></i><i style="background:#E8683A;"></i><i style="background:#14586B;"></i></div>
+        <div class="links"><a href="modern/index.html">首页</a><a href="modern/footprints.html">足迹总览</a><a href="modern/trip.html">旅行详情</a></div>
+      </div>
+    </div>
+
+    <div class="style-card">
+      <div class="shot" style="background:
+        radial-gradient(#EADFC8 1.5px, transparent 1.5px) 0 0/22px 22px,
+        linear-gradient(150deg,#F2DDB8 0%,#E0BC7E 55%,#B98F4E 100%);"><span class="t">拼贴桌面 · 热闹手作感</span></div>
+      <div class="body">
+        <h3>温暖手账 · A 拼贴版</h3>
+        <p class="en">Scrapbook</p>
+        <p>拍立得、和纸胶带、三色便签、登机牌、锯齿时间轴；真实照片、1px 细边框、4px 小圆角。手作感最强，像一本用力做出来的手账。</p>
+        <div class="swatches"><i style="background:#F6EFE3;"></i><i style="background:#4A3F35;"></i><i style="background:#C4622D;"></i><i style="background:#8A9B6E;"></i></div>
+        <div class="links"><a href="warm/index.html">首页</a><a href="warm/footprints.html">足迹总览</a><a href="warm/trip.html">旅行详情</a></div>
       </div>
     </div>
   </div>
 
-  <div class="section-head" style="margin-top:clamp(44px,6vw,64px);">
+  <div class="section-head" style="margin-top:clamp(40px,6vw,60px);">
     <span class="kicker">Archived</span>
-    <h2>归档（试过，未采用）</h2>
-    <span class="tail">留作参考</span>
+    <h2>归档</h2>
+    <span class="tail">试过，未采用</span>
   </div>
   <div class="archived">
     <div class="mini-card">
-      <h4>手账 B · 精修版</h4>
-      <span>减法方向错误——降装饰后反而失去气质，已否决</span>
+      <h4>手账 B 精修版</h4>
+      <span>减法方向错误</span>
       <a href="warm2/index.html">查看 →</a>
     </div>
     <div class="mini-card">
       <h4>杂志编辑风</h4>
-      <span>太正式，不贴家庭相册主题</span>
+      <span>太正式</span>
       <a href="index.html">查看 →</a>
     </div>
     <div class="mini-card">
       <h4>深色画廊风</h4>
-      <span>同上，展馆气质过重</span>
+      <span>展馆气质过重</span>
       <a href="gallery/index.html">查看 →</a>
     </div>
   </div>
+
+  <p style="margin-top:28px;font-size:13.5px;color:var(--gray);">管理端（<a href="admin.html" style="color:var(--accent);">admin.html</a>）独立于展示端风格。</p>
 </section>
 
 <footer class="footer" style="margin-top:clamp(56px,8vw,88px);">
