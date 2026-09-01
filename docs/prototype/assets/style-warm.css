@@ -36,7 +36,7 @@ body {
 a { color: inherit; text-decoration: none; }
 
 /* ---------- 导航 ---------- */
-.nav { position: sticky; top: 0; z-index: 50; background: rgba(246,239,227,.94); backdrop-filter: blur(8px); border-bottom: 1.5px dashed var(--hairline); }
+.nav { position: sticky; top: 0; z-index: 50; background: rgba(246,239,227,.94); backdrop-filter: blur(8px); border-bottom: 1px dashed var(--hairline); }
 .nav-inner { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); height: 68px; display: flex; align-items: center; justify-content: space-between; }
 .masthead { display: flex; align-items: center; gap: 12px; }
 .masthead .zh { font-family: var(--kai); font-size: 22px; font-weight: 700; color: #fff; background: var(--accent); padding: 4px 18px; border-radius: 6px 22px 8px 20px; transform: rotate(-2deg); box-shadow: 0 3px 10px rgba(196,98,45,.3); }
@@ -69,7 +69,7 @@ a { color: inherit; text-decoration: none; }
 .figure .polaroid:nth-of-type(even) { transform: rotate(1.4deg); }
 .figure figcaption { text-align: center; font-family: var(--kai); font-size: 13.5px; color: var(--gray); margin-top: 10px; }
 
-.mini-frame { position: relative; border-radius: 20px; border: 1.5px solid var(--hairline); box-shadow: var(--shadow); background: var(--card); overflow: hidden; }
+.mini-frame { position: relative; border-radius: 20px; border: 1px solid var(--hairline); box-shadow: var(--shadow); background: var(--card); overflow: hidden; }
 .mini-frame .map-inner { border-radius: 19px; overflow: hidden; }
 .mini-frame .tape { z-index: 5; top: -12px; }
 #mini-map { width: 100%; }
@@ -77,7 +77,7 @@ a { color: inherit; text-decoration: none; }
 
 /* 按天行程：手账日程格 */
 .day-list { display: grid; gap: 10px; }
-.day-list .dl { display: grid; grid-template-columns: 64px 110px 1fr; gap: 16px; align-items: center; background: var(--card); border: 1.5px solid var(--hairline); border-radius: 14px; padding: 12px 18px; }
+.day-list .dl { display: grid; grid-template-columns: 64px 110px 1fr; gap: 16px; align-items: center; background: var(--card); border: 1px solid var(--hairline); border-radius: 14px; padding: 12px 18px; }
 .day-list .dl b { font-family: var(--kai); font-size: 21px; color: #fff; background: var(--sage); width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 .day-list .dl:nth-child(2n) b { background: var(--accent); }
 .day-list .dl .dt { font-size: 12.5px; color: var(--gray); }
@@ -97,7 +97,7 @@ a { color: inherit; text-decoration: none; }
 
 /* 上下篇 */
 .pn { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 64px; }
-.pn a { background: var(--card); border: 1.5px solid var(--hairline); border-radius: 14px; padding: 20px 24px; transition: transform .18s; }
+.pn a { background: var(--card); border: 1px solid var(--hairline); border-radius: 14px; padding: 20px 24px; transition: transform .18s; }
 .pn a:hover { transform: translateY(-3px); }
 .pn a.next { text-align: right; }
 .pn .lab { font-size: 11.5px; color: var(--gray); letter-spacing: .1em; }
@@ -117,7 +117,7 @@ a { color: inherit; text-decoration: none; }
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
 
 /* ---------- 通用小件 ---------- */
-.pill { display: inline-block; font-size: 12px; letter-spacing: .18em; color: var(--sage); background: var(--sage-soft); border: 1.5px dashed var(--sage); padding: 3px 16px; border-radius: 999px; }
+.pill { display: inline-block; font-size: 12px; letter-spacing: .18em; color: var(--sage); background: var(--sage-soft); border: 1px dashed var(--sage); padding: 3px 16px; border-radius: 999px; }
 .tape { position: absolute; width: 96px; height: 26px; background: rgba(196,98,45,.35); opacity: .9; box-shadow: 0 1px 3px rgba(74,63,53,.12); }
 .tape.green { background: rgba(138,155,110,.5); }
 .tape.sand { background: rgba(228,201,143,.6); }
@@ -166,7 +166,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- 统计：便签板 ---------- */
 .notes { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
-.note-card { background: var(--card); border: 1.5px solid var(--hairline); border-radius: 12px; padding: 18px 14px 14px; text-align: center; box-shadow: 0 4px 12px rgba(74,63,53,.06); position: relative; }
+.note-card { background: var(--card); border: 1px solid var(--hairline); border-radius: 12px; padding: 18px 14px 14px; text-align: center; box-shadow: 0 4px 12px rgba(74,63,53,.06); position: relative; }
 .note-card .v { font-family: var(--kai); font-size: clamp(26px, 3.2vw, 36px); line-height: 1.15; }
 .note-card .k { margin-top: 4px; font-size: 12px; color: var(--gray); }
 .note-card.c-orange .v { color: var(--accent); }
@@ -183,7 +183,7 @@ a { color: inherit; text-decoration: none; }
 .note-card .tape { top: -12px; left: 50%; transform: translateX(-50%) rotate(-3deg); width: 70px; height: 20px; }
 
 /* ---------- 登机牌特写 ---------- */
-.boarding { position: relative; background: var(--card); border: 1.5px solid var(--hairline); border-radius: 20px; box-shadow: var(--shadow); display: grid; grid-template-columns: 1.15fr 1fr; overflow: hidden; }
+.boarding { position: relative; background: var(--card); border: 1px solid var(--hairline); border-radius: 20px; box-shadow: var(--shadow); display: grid; grid-template-columns: 1.15fr 1fr; overflow: hidden; }
 .boarding .main { padding: clamp(18px, 3vw, 30px); }
 .boarding .main .meta { font-size: 12.5px; color: var(--gray); margin-bottom: 8px; }
 .boarding h3 { font-family: var(--kai); font-size: clamp(24px, 3vw, 33px); font-weight: 700; }
@@ -223,7 +223,7 @@ a { color: inherit; text-decoration: none; }
 .page-head .polaroid { position: absolute; right: var(--pad); top: clamp(30px, 5vw, 56px); width: 190px; transform: rotate(4deg); display: none; }
 @media (min-width: 900px) { .page-head .polaroid { display: block; } }
 
-.map-frame { position: relative; border-radius: 20px; border: 1.5px solid var(--hairline); box-shadow: var(--shadow); overflow: visible; background: var(--card); }
+.map-frame { position: relative; border-radius: 20px; border: 1px solid var(--hairline); box-shadow: var(--shadow); overflow: visible; background: var(--card); }
 .map-frame .map-inner { border-radius: 20px; overflow: hidden; }
 #map { width: 100%; }
 .map-frame .tape { z-index: 5; }
@@ -245,7 +245,7 @@ a { color: inherit; text-decoration: none; }
 .tl { position: relative; padding-bottom: 30px; }
 .tl::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; border-left: 2.5px dashed var(--hairline); }
 .tl-year { position: relative; z-index: 2; width: 92px; height: 92px; margin: 40px auto 26px; display: flex; align-items: center; justify-content: center; border: 2.5px dashed var(--accent); border-radius: 50%; color: var(--accent); font-family: var(--kai); font-size: 27px; font-weight: 700; transform: rotate(-5deg); background: var(--card); box-shadow: 0 3px 10px rgba(196,98,45,.15); }
-.tl-item { position: relative; z-index: 2; width: calc(50% - 66px); background: var(--card); border: 1.5px solid var(--hairline); border-radius: var(--radius); padding: 18px 22px; box-shadow: 0 5px 14px rgba(74,63,53,.06); }
+.tl-item { position: relative; z-index: 2; width: calc(50% - 66px); background: var(--card); border: 1px solid var(--hairline); border-radius: var(--radius); padding: 18px 22px; box-shadow: 0 5px 14px rgba(74,63,53,.06); }
 .tl-item:nth-of-type(odd) { margin-right: auto; }
 .tl-item:nth-of-type(even) { margin-left: auto; }
 /* 连接小飞机 */
@@ -257,12 +257,12 @@ a { color: inherit; text-decoration: none; }
 .tl-item .t { font-family: var(--kai); font-size: 20px; font-weight: 700; margin: 4px 0 2px; }
 .tl-item .t a:hover { color: var(--accent); }
 .tl-item .d { font-size: 13.5px; color: var(--ink-2); }
-.tl-days { margin-top: 10px; border-top: 1.5px dashed var(--hairline); padding-top: 8px; }
+.tl-days { margin-top: 10px; border-top: 1px dashed var(--hairline); padding-top: 8px; }
 .tl-days .day { font-size: 12.5px; color: var(--gray); padding: 2.5px 0; display: flex; gap: 12px; }
 .tl-days .day b { color: var(--sage); font-weight: 700; min-width: 2.2em; }
 
 /* ---------- 页脚 ---------- */
-.footer { margin-top: clamp(64px, 9vw, 104px); border-top: 1.5px dashed var(--hairline); padding: 36px 0 20px; }
+.footer { margin-top: clamp(64px, 9vw, 104px); border-top: 1px dashed var(--hairline); padding: 36px 0 20px; }
 .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
 .footer .zh { font-family: var(--kai); font-size: 16px; font-weight: 700; color: #fff; background: var(--sage); padding: 2px 16px; border-radius: 999px; transform: rotate(-2deg); }
 .footer .r { font-size: 12.5px; color: var(--gray); }
@@ -282,7 +282,7 @@ a { color: inherit; text-decoration: none; }
   .nav-inner { position: relative; }
   .nav-burger { display: flex; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px 0; }
   .nav-burger span { width: 22px; height: 2.5px; border-radius: 2px; background: var(--ink); }
-  .nav-links { display: none; position: absolute; top: 68px; left: calc(-1 * var(--pad)); right: calc(-1 * var(--pad)); background: var(--paper); border-bottom: 1.5px dashed var(--hairline); flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px var(--pad) 20px; }
+  .nav-links { display: none; position: absolute; top: 68px; left: calc(-1 * var(--pad)); right: calc(-1 * var(--pad)); background: var(--paper); border-bottom: 1px dashed var(--hairline); flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px var(--pad) 20px; }
   .nav-toggle:checked ~ .nav-links { display: flex; }
   .notes { grid-template-columns: repeat(2, 1fr); }
   .note-card:nth-child(n) { grid-column: span 1; transform: rotate(0); }
