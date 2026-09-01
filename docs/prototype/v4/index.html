@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>游迹 · 从一张地图开始（流程式 · v4）</title>
+<link rel="stylesheet" href="../assets/style-flow.css">
+</head>
+<body>
+
+<!-- 第 0 幕：开场帷幕 -->
+<div class="veil" id="veil">
+  <div class="inner">
+    <p class="kicker">Up Journey · 2013 — 2024</p>
+    <h1>十年，23 个省，<br>都从一张<em>地图</em>说起</h1>
+    <p>不用往下翻，也不用找菜单——每个去过的地方都在地图上，点开它，就是那次旅行的故事。</p>
+    <button class="go">展开地图 ↓</button>
+  </div>
+</div>
+
+<!-- 导航 -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="masthead" href="index.html">
+      <span class="mark">🧭</span><span class="zh">游迹</span><span class="en">Up Journey</span>
+    </a>
+    <input type="checkbox" id="navtoggle" class="nav-toggle">
+    <label class="nav-burger" for="navtoggle"><span></span><span></span><span></span></label>
+    <nav class="nav-links">
+      <a href="index.html" class="active">地图</a>
+      <a href="list.html">游记名录</a>
+    </nav>
+  </div>
+</header>
+
+<!-- 第一幕：全屏地图 -->
+<div class="map-stage"><div id="map"></div></div>
+
+<!-- 统计浮签 -->
+<aside class="stats-flag" aria-label="足迹统计">
+  <span class="t">这个家庭的十年</span>
+  <span class="row"><span class="v">23</span><span class="k">省 / 行政区</span></span>
+  <span class="row"><span class="v">68</span><span class="k">座城市 · 137 处景点</span></span>
+  <span class="row"><span class="v">45</span><span class="k">次出发 · 218 天在路上</span></span>
+</aside>
+
+<!-- 探索路径指示 -->
+<div class="stage-chip"><b>01</b> 地图 <span class="sep"></span> 找一个想看的地方 <span class="sep"></span> <span style="color:var(--gray)">02 地点 → 03 游记</span></div>
+
+<!-- 图例 -->
+<div class="legend-chip">
+  <span><i style="background:#E8683A;"></i>省份越深去得越多</span>
+  <span><i style="background:#14586B;"></i>景点 · 点击看故事</span>
+</div>
+
+<!-- 年份坞 -->
+<div class="year-dock">
+  <button class="all on" data-year="all">全部十年</button>
+  <button data-year="2024">2024</button>
+  <button data-year="2023">2023</button>
+  <button data-year="2022">2022</button>
+  <button data-year="2019">2019</button>
+  <button data-year="2018">2018</button>
+</div>
+
+<!-- 探索提示 -->
+<div class="hint gone" id="hint">👆 点一点地图上的景点标签——每个地点背后，都是一次旅行</div>
+
+<!-- 第二幕：地点故事面板（模板） -->
+<aside class="panel" id="panel"></aside>
+<template id="panel-tpl">
+  <div class="head">
+    <div class="ph"><img src="{IMG}" alt="{NAME}"></div>
+    <button class="close" aria-label="关闭">✕</button>
+    <span class="year-tag">{YEAR} 年</span>
+  </div>
+  <div class="body">
+    <p class="stage">02 · 在这里发生了什么</p>
+    <h2>{NAME}</h2>
+    <p class="where">{CITY} · {YEAR} 年到访</p>
+    <p class="blurb">{BLURB}</p>
+    <div class="thumbs">
+      <div class="ph"><img src="{T1}" alt=""></div>
+      <div class="ph"><img src="{T2}" alt=""></div>
+      <div class="ph"><img src="{T3}" alt=""></div>
+    </div>
+    <div class="related">
+      <p class="t">属于这次旅行</p>
+      <a href="#">《{TRIP}》<span class="arr">→</span></a>
+      <a href="list.html">这一年还有别的行程<span class="arr">→</span></a>
+    </div>
+  </div>
+  <div class="foot"><a class="cta" href="trip.html">读完整游记 →</a></div>
+</template>
+
+<script src="../assets/echarts.min.js"></script>
+<script src="../assets/map-flow.js"></script>
+</body>
+</html>
