@@ -46,6 +46,72 @@ a { color: inherit; text-decoration: none; }
 .nav-links a:hover { background: var(--card); }
 .nav-links a.active { background: var(--sage); color: #fff; box-shadow: 0 3px 8px rgba(138,155,110,.35); }
 .nav-toggle { display: none; }
+/* ---------- 旅行详情页（手账内页） ---------- */
+.article-hero { position: relative; padding: clamp(44px, 7vw, 72px) 0 8px; }
+.article-hero .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; color: var(--gray); margin-bottom: 14px; }
+.article-hero h1 { font-family: var(--kai); font-size: clamp(30px, 5.4vw, 48px); font-weight: 700; line-height: 1.3; }
+.article-hero .desc { margin-top: 14px; color: var(--ink-2); max-width: 40em; font-size: 15px; }
+.article-hero .tags { margin-top: 16px; }
+.article-hero .polaroid { position: absolute; right: 0; top: clamp(28px, 5vw, 56px); width: 210px; transform: rotate(3.5deg); display: none; }
+@media (min-width: 960px) { .article-hero .polaroid { display: block; } }
+
+.cover-frame { position: relative; margin-top: 30px; display: flex; justify-content: center; }
+.cover-frame .polaroid { width: min(720px, 100%); transform: rotate(-1.2deg); }
+.cover-frame .tape { top: -14px; left: 50%; transform: translateX(-50%) rotate(-2deg); width: 110px; }
+
+.article { max-width: 700px; margin: 44px auto 0; font-size: 16px; }
+.article p { margin-bottom: 1.5em; color: var(--ink-2); }
+.article h2 { font-family: var(--kai); font-size: 23px; margin: 2em 0 1em; color: var(--ink); }
+.article h2::before { content: "❀ "; color: var(--sage); }
+.article blockquote { border: none; background: var(--sage-soft); border-radius: 14px; padding: 18px 24px; margin: 2em 0; color: #5F7048; font-family: var(--kai); font-size: 16.5px; }
+.figure { margin: 2.4em 0; }
+.figure .polaroid { transform: rotate(-1.6deg); }
+.figure .polaroid:nth-of-type(even) { transform: rotate(1.4deg); }
+.figure figcaption { text-align: center; font-family: var(--kai); font-size: 13.5px; color: var(--gray); margin-top: 10px; }
+
+.mini-frame { position: relative; border-radius: 20px; border: 1.5px solid var(--hairline); box-shadow: var(--shadow); background: var(--card); overflow: hidden; }
+.mini-frame .map-inner { border-radius: 19px; overflow: hidden; }
+.mini-frame .tape { z-index: 5; top: -12px; }
+#mini-map { width: 100%; }
+.map-note { margin-top: 14px; font-size: 12.5px; color: var(--gray); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+/* 按天行程：手账日程格 */
+.day-list { display: grid; gap: 10px; }
+.day-list .dl { display: grid; grid-template-columns: 64px 110px 1fr; gap: 16px; align-items: center; background: var(--card); border: 1.5px solid var(--hairline); border-radius: 14px; padding: 12px 18px; }
+.day-list .dl b { font-family: var(--kai); font-size: 21px; color: #fff; background: var(--sage); width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.day-list .dl:nth-child(2n) b { background: var(--accent); }
+.day-list .dl .dt { font-size: 12.5px; color: var(--gray); }
+.day-list .dl .tt { font-size: 14.5px; color: var(--ink-2); }
+
+/* 景点图库：拍立得货架 */
+.gallery-attr { margin-bottom: 48px; }
+.gallery-attr .g-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px; }
+.gallery-attr .g-head h3 { font-family: var(--kai); font-size: 22px; font-weight: 700; }
+.gallery-attr .g-head span { font-size: 12.5px; color: var(--gray); }
+.gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.gallery-grid .polaroid { transform: rotate(-1.2deg); }
+.gallery-grid .polaroid:nth-child(2) { transform: rotate(1.6deg) translateY(10px); }
+.gallery-grid .polaroid:nth-child(3) { transform: rotate(-.5deg); }
+.gallery-grid .polaroid:nth-child(5) { transform: rotate(1.2deg) translateY(10px); }
+.gallery-grid .tape { top: -12px; left: 50%; transform: translateX(-50%) rotate(-3deg); width: 64px; height: 18px; }
+
+/* 上下篇 */
+.pn { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 64px; }
+.pn a { background: var(--card); border: 1.5px solid var(--hairline); border-radius: 14px; padding: 20px 24px; transition: transform .18s; }
+.pn a:hover { transform: translateY(-3px); }
+.pn a.next { text-align: right; }
+.pn .lab { font-size: 11.5px; color: var(--gray); letter-spacing: .1em; }
+.pn .t { font-family: var(--kai); font-size: 18px; font-weight: 700; margin-top: 4px; color: var(--accent); }
+
+@media (max-width: 640px) {
+  .article-hero .polaroid { display: none; }
+  .day-list .dl { grid-template-columns: 46px 1fr; }
+  .day-list .dl .dt { grid-column: 2; }
+  .day-list .dl .tt { grid-column: 2; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .pn { grid-template-columns: 1fr; }
+  .pn a.next { text-align: left; }
+}
 .nav-burger { display: none; }
 
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
