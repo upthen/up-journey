@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+
+# Build output
+dist/
+*.egg-info/
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Thumbnail cache (generated at runtime, never committed)
+data/cache/
+
+# Misc
+.DS_Store
+*.log
