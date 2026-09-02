@@ -12,6 +12,9 @@ services:
     restart: unless-stopped
     ports:
       - "8100:80" # 对外唯一端口；公网反代前务必先启用鉴权（见 docs/deployment.md）
+      - "8443:8443" # 公网 HTTPS（IPv6 直连）；证书由 acme.sh 挂载到 /etc/nginx/certs
+    volumes:
+      - ./certs/journey.yongbo.life_ecc:/etc/nginx/certs:ro
     depends_on:
       api:
         condition: service_healthy
