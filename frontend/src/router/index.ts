@@ -11,12 +11,17 @@ export const router = createRouter({
     { path: '/list', name: 'list', component: () => import('@/views/JournalListView.vue') },
     { path: '/trip/:slug', name: 'trip', component: () => import('@/views/TripDetailView.vue') },
     {
+      // 登录页独立于 AdminLayout：不带顶栏/侧边菜单，避免嵌套布局
+      path: '/admin/login',
+      name: 'admin-login',
+      component: () => import('@/views/admin/AdminLoginView.vue'),
+    },
+    {
       path: '/admin',
       component: () => import('@/views/admin/AdminLayout.vue'),
-      // 鉴权守卫：公网部署前已启用管理员密码；展示端路由不经过这里
+      // 鉴权守卫：公网部署已启用管理员密码；展示端路由不经过这里
       children: [
         { path: '', redirect: '/admin/trips' },
-        { path: 'login', name: 'admin-login', component: () => import('@/views/admin/AdminLoginView.vue') },
         { path: 'trips', name: 'admin-trips', component: () => import('@/views/admin/TripListView.vue'), meta: { auth: true } },
         { path: 'trips/new', name: 'admin-trip-new', component: () => import('@/views/admin/TripEditView.vue'), meta: { auth: true } },
         { path: 'trips/:id(\\d+)', name: 'admin-trip-edit', component: () => import('@/views/admin/TripEditView.vue'), meta: { auth: true } },

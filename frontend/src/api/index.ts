@@ -14,11 +14,13 @@ import type {
 
 export const http = axios.create({ baseURL: '/api/v1' })
 
-// 管理端会话过期 → 跳登录页（展示端公开接口没有 401，不受影响）
+// 管理端会话过期 → 跳登录页（展示端公开接口没有 401，不受影响）。
+// 已在登录页时不再跳转，防止 401 → 跳转 → 又 401 的整页刷新循环。
 http.interceptors.response.use(undefined, (error) => {
   const status = error?.response?.status
   const url: string = error?.config?.url ?? ''
   if (status === 401 && url.includes('/admin') && !url.endsWith('/login')) {
+    if (window.location.pathname === '/admin/login') return Promise.reject(error)
     window.location.href = `/admin/login?next=${encodeURIComponent(window.location.pathname)}`
   }
   return Promise.reject(error)
