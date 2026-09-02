@@ -16,6 +16,7 @@ _CACHE = tempfile.mkdtemp(prefix="uj_cache_")
 os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
 os.environ.setdefault("PHOTOS_DIR", _PHOTOS)
 os.environ.setdefault("CACHE_DIR", _CACHE)
+os.environ.setdefault("ADMIN_PASSWORD", "test-admin")  # 测试环境默认开启管理端鉴权
 
 sys.path.insert(0, str(BACKEND))
 
@@ -44,6 +45,15 @@ def db():
 
 @pytest.fixture()
 def client(db) -> TestClient:
+    c = TestClient(app)
+    r = c.post("/api/v1/admin/login", json={"password": os.environ["ADMIN_PASSWORD"]})
+    assert r.status_code == 200, "测试 client 应以默认管理密码登录"
+    return c
+
+
+@pytest.fixture()
+def anon_client(db) -> TestClient:
+    """未登录客户端（验证 401 路径）。"""
     return TestClient(app)
 
 

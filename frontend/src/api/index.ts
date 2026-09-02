@@ -14,6 +14,16 @@ import type {
 
 export const http = axios.create({ baseURL: '/api/v1' })
 
+// 管理端会话过期 → 跳登录页（展示端公开接口没有 401，不受影响）
+http.interceptors.response.use(undefined, (error) => {
+  const status = error?.response?.status
+  const url: string = error?.config?.url ?? ''
+  if (status === 401 && url.includes('/admin') && !url.endsWith('/login')) {
+    window.location.href = `/admin/login?next=${encodeURIComponent(window.location.pathname)}`
+  }
+  return Promise.reject(error)
+})
+
 export function photoUrl(path: string, size: 'thumb' | 'full' = 'thumb'): string {
   return `/api/v1/photos/${size}?path=${encodeURIComponent(path)}`
 }
@@ -29,6 +39,9 @@ export const api = {
     http.get<{ members: Member[]; tags: Tag[] }>('/meta').then((r) => r.data),
 
   admin: {
+    session: () => http.get<{ ok: boolean }>('/admin/session').then((r) => r.data),
+    login: (password: string) => http.post<{ ok: boolean }>('/admin/login', { password }).then((r) => r.data),
+    logout: () => http.post('/admin/logout'),
     trips: (params?: { year?: number; tag?: string; status?: string; q?: string }) =>
       http.get<TripCard[]>('/admin/trips', { params }).then((r) => r.data),
     trip: (id: number) => http.get<TripDetail>(`/admin/trips/${id}`).then((r) => r.data),

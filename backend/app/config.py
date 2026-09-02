@@ -23,6 +23,10 @@ class Settings(BaseSettings):
     full_size: int = 1600
     image_quality: int = 85
 
+    # 管理端密码：留空 = 未配置，管理 API 一律 503（安全默认：公网忘配密码的后果是
+    # 管理端不可用，而不是无密码裸奔）。本地开发在 backend/.env 里配一个即可。
+    admin_password: str = ""
+
 
 @lru_cache
 def get_settings() -> Settings:

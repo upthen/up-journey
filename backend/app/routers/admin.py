@@ -6,7 +6,11 @@ v1 局域网无鉴权：所有路由挂在 `require_admin` 依赖下，未来反
 
 import re
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
+from pydantic import BaseModel
+
+from ..auth import clear_cookie, issue_cookie, verify_request
+from ..config import get_settings
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -35,9 +39,40 @@ from ..utils import slugify_title
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 
 
-async def require_admin() -> None:
-    """鉴权接缝：v1 直接放行；启用密码开关时在这里校验请求头。"""
-    return None
+async def require_admin(request: Request) -> None:
+    """鉴权接缝的落地实现（architecture.md 安全边界节）：
+    密码登录后凭 HttpOnly 签名 cookie 访问；未配置密码 = 管理端 503。
+    """
+    verify_request(request)
+
+
+# ---------- 管理端会话 ----------
+
+class LoginIn(BaseModel):
+    password: str
+
+
+@router.post("/login")
+def admin_login(payload: LoginIn, response: Response) -> dict:
+    if not get_settings().admin_password:
+        raise HTTPException(status_code=503, detail="管理端密码未配置：在 .env 设置 ADMIN_PASSWORD 后重启")
+    if not issue_cookie(response, payload.password):
+        # 统一错误口径：不区分"密码错"与"未登录"，避免探测
+        raise HTTPException(status_code=401, detail="密码不正确")
+    return {"ok": True}
+
+
+@router.post("/logout")
+def admin_logout(response: Response) -> dict:
+    clear_cookie(response)
+    return {"ok": True}
+
+
+@router.get("/session")
+def admin_session(request: Request) -> dict:
+    """前端路由守卫探测：200=已登录；401=未登录；503=未配置密码。"""
+    verify_request(request)
+    return {"ok": True}
 
 
 # ---------- 家庭成员 ----------

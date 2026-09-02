@@ -1,13 +1,29 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
+import { api } from '@/api'
 import { useMetaStore } from '@/stores/meta'
 
 const route = useRoute()
+const router = useRouter()
 const meta = useMetaStore()
+const authed = ref(false)
 
-onMounted(() => meta.ensure())
+async function logout() {
+  await api.admin.logout()
+  router.push('/admin/login')
+}
+
+onMounted(async () => {
+  try {
+    await api.admin.session()
+    authed.value = true
+  } catch {
+    authed.value = false
+  }
+  meta.ensure()
+})
 </script>
 
 <template>
@@ -16,7 +32,10 @@ onMounted(() => meta.ensure())
       <div class="brand">
         <span class="mark">🧭</span> 游迹 <span class="badge">管理端</span>
       </div>
-      <router-link to="/">返回展示端 →</router-link>
+      <div class="flex items-center gap-4">
+        <a v-if="authed" href="#" style="font-size: 13px; color: var(--ink-2)" @click.prevent="logout">退出登录</a>
+        <router-link to="/" style="font-size: 13px; color: var(--ink-2)">返回展示端 →</router-link>
+      </div>
     </header>
     <div class="ad-layout">
       <aside class="ad-side">
