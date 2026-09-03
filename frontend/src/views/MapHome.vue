@@ -255,7 +255,7 @@ onUnmounted(() => {
     </div>
 
     <!-- 探索提示 -->
-    <div class="hint" :class="{ gone: hintGone }">👆 点一点地图上的景点标签——每个地点背后，都是一次旅行</div>
+    <div class="map-hint" :class="{ gone: hintGone }">👆 点一点地图上的景点标签——每个地点背后，都是一次旅行</div>
 
     <!-- 第二幕：地点故事面板 -->
     <aside v-if="openSpot" class="panel open">
