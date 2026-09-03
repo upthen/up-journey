@@ -1,6 +1,8 @@
 """聚合服务：统计口径（docs/database.md）、足迹地图数据、旅行序列化。"""
 
+import re
 from datetime import date
+from urllib.parse import unquote
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -52,6 +54,27 @@ def _resolved(own: float | None, fallback: float | None) -> float | None:
     return own if own is not None else fallback
 
 
+_CONTENT_IMG_RE = re.compile(r"photos/(?:thumb|full)\?path=([^\"'\s>&]+)")
+
+
+def _first_content_photo(content: str | None) -> str | None:
+    """正文 HTML 里插入的第一张相册图（「相册插图」写入的 /photos/{size}?path= 链接）。"""
+    if not content:
+        return None
+    m = _CONTENT_IMG_RE.search(content)
+    return unquote(m.group(1)) if m else None
+
+
+def _fallback_cover(trip: Trip) -> str | None:
+    """卡片封面兜底：未手动选封面时，取第一个配置了相册的景点的首图，否则取正文首图。"""
+    for a in trip.attractions:
+        if a.album_rel_path:
+            photos = scan_album(a.album_rel_path)
+            if photos:
+                return photos[0]
+    return _first_content_photo(trip.content)
+
+
 def trip_card(trip: Trip) -> TripCardOut:
     return TripCardOut(
         id=trip.id,
@@ -62,7 +85,7 @@ def trip_card(trip: Trip) -> TripCardOut:
         year=trip.start_date.year,
         days_count=_trip_days_count(trip),
         summary=trip.summary,
-        cover_photo=trip.cover_photo,
+        cover_photo=trip.cover_photo or _fallback_cover(trip),
         country=trip.country,
         status=trip.status,
         tags=[tag_out(t) for t in trip.tags],
