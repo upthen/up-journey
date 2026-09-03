@@ -217,6 +217,8 @@ registerAlbumImageMenu()
 const editorRef = shallowRef()
 const toolbarConfig = {
   insertKeys: { index: 0, keys: albumToolbarKeys },
+  // 图片唯一来源是 NAS 相册（相册插图），后端无上传接口——移除内置上传/网络图片与视频入口
+  excludeKeys: ['group-image', 'group-video', 'insertImage', 'uploadImage', 'insertVideo', 'uploadVideo'],
 }
 const editorConfig = { placeholder: '写下游记正文…… 可用「相册插图」从 NAS 相册插图，图片不会重复上传。' }
 
@@ -226,7 +228,11 @@ setAlbumPickerOpener(() => {
   insertDialog.value = true
 })
 function onInsertPhotoSelected({ path }: { path: string }) {
-  editorRef.value?.insertNode({
+  const editor = editorRef.value
+  if (!editor) return
+  // 选图对话框会夺走编辑器焦点；先恢复最后的光标位置再插入，避免静默失败。
+  editor.restoreSelection?.()
+  editor.insertNode({
     type: 'image',
     src: photoUrl(path, 'full'),
     alt: '',
@@ -443,7 +449,7 @@ onMounted(async () => {
     <section class="ad-panel">
       <h4>景点与相册目录</h4>
       <p class="hint">相册目录填 NAS 共享相册内的子目录（相对路径），保存后实时扫描，无需上传图片；坐标不精调则跟随城市中心。</p>
-      <el-table :data="form.attractions" size="small">
+      <el-table :data="form.attractions" size="small" class="edit-table">
         <el-table-column label="景点名称" width="170">
           <template #default="{ row }"><el-input v-model="row.name" maxlength="64" placeholder="如 洱海" /></template>
         </el-table-column>
@@ -481,7 +487,7 @@ onMounted(async () => {
           </template>
         </el-table-column>
       </el-table>
-      <div class="mt-2 flex gap-2">
+      <div class="mt-4 flex gap-2">
         <el-button link type="primary" @click="addAttraction">＋ 添加景点</el-button>
         <el-button v-if="form.attractions.length" link @click="loadCoverCandidates">刷新封面候选</el-button>
       </div>
@@ -490,7 +496,7 @@ onMounted(async () => {
     <section class="ad-panel">
       <h4>按天行程</h4>
       <p class="hint">对应详情页「按天行程」与编年页的天级子节点，可留空。</p>
-      <el-table :data="form.days" size="small">
+      <el-table :data="form.days" size="small" class="edit-table">
         <el-table-column label="天" width="64">
           <template #default="{ $index }"><b style="color: var(--coral)">D{{ $index + 1 }}</b></template>
         </el-table-column>
@@ -509,7 +515,7 @@ onMounted(async () => {
           </template>
         </el-table-column>
       </el-table>
-      <div class="mt-2 flex gap-2">
+      <div class="mt-4 flex gap-2">
         <el-button link type="primary" @click="addDay">＋ 添加一天</el-button>
         <el-button link @click="fillDaysFromRange">按起止日期生成全部天</el-button>
       </div>

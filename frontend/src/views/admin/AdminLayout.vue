@@ -29,12 +29,14 @@ onMounted(async () => {
 <template>
   <div class="ad-shell">
     <header class="ad-topbar">
-      <div class="brand">
-        <span class="mark">🧭</span> 游迹 <span class="badge">管理端</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <a v-if="authed" href="#" style="font-size: 13px; color: var(--ink-2)" @click.prevent="logout">退出登录</a>
-        <router-link to="/" style="font-size: 13px; color: var(--ink-2)">返回展示端 →</router-link>
+      <div class="ad-topbar-inner">
+        <div class="brand">
+          <span class="mark">🧭</span> 游迹 <span class="badge">管理端</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <a v-if="authed" href="#" style="font-size: 13px; color: var(--ink-2)" @click.prevent="logout">退出登录</a>
+          <router-link to="/" style="font-size: 13px; color: var(--ink-2)">返回展示端 →</router-link>
+        </div>
       </div>
     </header>
     <div class="ad-layout">

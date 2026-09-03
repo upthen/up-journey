@@ -34,7 +34,10 @@ const menuKey = 'albumImage'
 
 let registered = false
 export function registerAlbumImageMenu() {
-  if (registered) return
+  // 标志挂在 window 上：vite HMR 重跑本模块时 module 级变量会复位，
+  // 而 wangEditor 的 Boot 全局注册表不会——重复注册同一 key 会直接抛错打断组件。
+  const w = window as unknown as { __albumImageMenuRegistered?: boolean }
+  if (registered || w.__albumImageMenuRegistered) return
   Boot.registerMenu({
     key: menuKey,
     factory() {
@@ -42,6 +45,7 @@ export function registerAlbumImageMenu() {
     },
   })
   registered = true
+  w.__albumImageMenuRegistered = true
 }
 
 export const albumToolbarKeys = ['albumImage']
