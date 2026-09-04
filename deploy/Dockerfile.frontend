@@ -1,12 +1,15 @@
 # 前端镜像：Node 构建 → nginx 托管（多阶段，产物极小）
-FROM --platform=linux/arm64 node:22-alpine AS build
+# REGISTRY：基础镜像来源，默认 docker.io；deploy.sh 会指向 NAS 私有镜像库
+# （192.168.1.18:5000），构建不再依赖 Docker Hub 直连。
+ARG REGISTRY=docker.io
+FROM --platform=linux/arm64 ${REGISTRY}/library/node:22-alpine AS build
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
 COPY frontend/ .
 RUN npm run build
 
-FROM --platform=linux/arm64 nginx:1.27-alpine
+FROM --platform=linux/arm64 ${REGISTRY}/library/nginx:1.27-alpine
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
