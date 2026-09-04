@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- 罗盘图标：呼应展示端导航的 🧭 珊瑚橘圆角块（flow.css .masthead .mark） -->
+  <rect width="512" height="512" rx="128" fill="#E8683A"/>
+  <path fill="#FFFFFF" opacity=".55" transform="rotate(45 256 256)" d="M256 168 272.97 239.03 344 256 272.97 272.97 256 344 239.03 272.97 168 256 239.03 239.03Z"/>
+  <path fill="#FFFFFF" d="M256 100 284.28 227.72 412 256 284.28 284.28 256 412 227.72 284.28 100 256 227.72 227.72Z"/>
+  <circle cx="256" cy="256" r="21" fill="#D5531F" stroke="#FFFFFF" stroke-width="9"/>
+</svg>
