@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from ..auth import clear_cookie, issue_cookie, verify_request
 from ..config import get_settings
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
 from ..config import get_settings
@@ -336,10 +337,20 @@ def admin_list_trips(
 
 @router.post("/trips", response_model=TripDetailOut, status_code=201, dependencies=[Depends(require_admin)])
 def create_trip(payload: TripIn, db: Session = Depends(get_db)) -> TripDetailOut:
-    trip = Trip()
-    _apply_trip(db, trip, payload)
-    db.add(trip)
-    db.commit()
+    # 双击/并发提交撞 slug：_unique_slug 是先查后插，窗口内互相看不见，
+    # 且 _apply_trip 内部的 flush 就会抛 IntegrityError——try 必须包住整段（#15）。
+    # 回滚后强制走自动生成（服务端按已提交态补 -2 后缀）重试一次。
+    try:
+        trip = Trip()
+        _apply_trip(db, trip, payload)
+        db.add(trip)
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        trip = Trip()
+        _apply_trip(db, trip, payload.model_copy(update={"slug": None}))
+        db.add(trip)
+        db.commit()
     return trip_detail(_load(db, trip.id))
 
 
@@ -351,8 +362,12 @@ def admin_get_trip(trip_id: int, db: Session = Depends(get_db)) -> TripDetailOut
 @router.put("/trips/{trip_id}", response_model=TripDetailOut, dependencies=[Depends(require_admin)])
 def update_trip(trip_id: int, payload: TripIn, db: Session = Depends(get_db)) -> TripDetailOut:
     trip = _load(db, trip_id)
-    _apply_trip(db, trip, payload)
-    db.commit()
+    try:
+        _apply_trip(db, trip, payload)
+        db.commit()
+    except IntegrityError as e:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="slug 已被其他旅行占用") from e
     return trip_detail(_load(db, trip.id))
 
 

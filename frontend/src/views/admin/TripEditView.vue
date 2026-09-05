@@ -413,7 +413,10 @@ function buildPayload(): TripInput {
   }
 }
 
+const saving = ref(false)
+
 async function save(status?: 'draft' | 'published') {
+  if (saving.value) return
   if (!form.title.trim()) {
     ElMessage.warning('标题必填')
     return
@@ -428,6 +431,7 @@ async function save(status?: 'draft' | 'published') {
   }
   if (status) form.status = status
   const payload = buildPayload()
+  saving.value = true
   try {
     if (tripId.value) {
       await api.admin.updateTrip(tripId.value, payload)
@@ -438,8 +442,16 @@ async function save(status?: 'draft' | 'published') {
     clearDraft()
     router.push('/admin/trips')
   } catch (e: unknown) {
-    const detail = (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail
-    ElMessage.error(detail || '保存失败，请检查表单')
+    const err = e as { response?: { status?: number; data?: { detail?: string } } }
+    const detail = err.response?.data?.detail
+    // 422（表单校验）才指向表单本身；500/网络问题指向服务并安抚——内容已在本地草稿里（#12/#15）
+    if (err.response?.status === 422) {
+      ElMessage.error(detail || '保存失败，请检查表单')
+    } else {
+      ElMessage.error(detail || '保存失败：服务暂时不可用，内容已保留在本地草稿中')
+    }
+  } finally {
+    saving.value = false
   }
 }
 
@@ -667,8 +679,8 @@ onMounted(async () => {
     </section>
 
     <div class="ad-actions-bar">
-      <el-button size="large" @click="save('draft')">保存草稿</el-button>
-      <el-button size="large" type="primary" @click="save('published')">发　布</el-button>
+      <el-button size="large" :disabled="saving" @click="save('draft')">保存草稿</el-button>
+      <el-button size="large" type="primary" :loading="saving" @click="save('published')">发　布</el-button>
     </div>
 
     <!-- 对话框们 -->
