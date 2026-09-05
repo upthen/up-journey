@@ -24,9 +24,19 @@ function routeText(t: TripCard): string {
   return t.route.join(' → ') || '—'
 }
 
-onMounted(async () => {
-  trips.value = await api.trips()
-})
+const error = ref(false)
+
+async function load() {
+  error.value = false
+  trips.value = null
+  try {
+    trips.value = await api.trips()
+  } catch {
+    error.value = true
+  }
+}
+
+onMounted(load)
 </script>
 
 <template>
@@ -84,6 +94,11 @@ onMounted(async () => {
       <div v-else-if="trips !== null" class="empty">
         <div class="big">📚</div>
         <p>还没有游记。<router-link to="/">回到地图 →</router-link></p>
+      </div>
+      <div v-else-if="error" class="load-error">
+        <div class="big">📡</div>
+        <p>游记加载失败——网络或服务暂时不可用。</p>
+        <button class="retry" @click="load">重 试</button>
       </div>
       <div v-else class="loading-dots"><i></i><i></i><i></i></div>
     </main>

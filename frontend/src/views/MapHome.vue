@@ -184,24 +184,35 @@ function enterMap() {
 }
 
 /* ---------- 生命周期 ---------- */
-onMounted(async () => {
-  ;[stats.value, footprints.value] = await Promise.all([api.stats(), api.footprints()])
+const mapError = ref(false)
 
-  // 中国 GeoJSON 随包离线（public/china.json），不依赖任何在线瓦片
-  const geo = await fetch('/china.json').then((r) => r.json())
-  echarts.registerMap('china', geo)
-  if (!mapEl.value) return
-  chart.value = echarts.init(mapEl.value, null, { renderer: 'canvas' })
-  chart.value.setOption(buildOption())
-  if (import.meta.env.DEV) (window as unknown as Record<string, unknown>).__ujChart = chart.value // 验收/调试用
-  chart.value.on('click', (params) => {
-    if (params.seriesType === 'effectScatter') {
-      const d = params.data as { spot?: Spot }
-      if (d?.spot) openPanel(d.spot)
-    }
-  })
-  window.addEventListener('resize', resizeHandler)
-})
+// 数据/GeoJSON 任一失败都不再静默白屏：地图台上给出错误与重试（#13）
+async function loadMap() {
+  mapError.value = false
+  try {
+    ;[stats.value, footprints.value] = await Promise.all([api.stats(), api.footprints()])
+
+    // 中国 GeoJSON 随包离线（public/china.json），不依赖任何在线瓦片
+    const res = await fetch('/china.json')
+    if (!res.ok) throw new Error(`china.json ${res.status}`)
+    echarts.registerMap('china', await res.json())
+    if (!mapEl.value || chart.value) return
+    chart.value = echarts.init(mapEl.value, null, { renderer: 'canvas' })
+    chart.value.setOption(buildOption())
+    if (import.meta.env.DEV) (window as unknown as Record<string, unknown>).__ujChart = chart.value // 验收/调试用
+    chart.value.on('click', (params) => {
+      if (params.seriesType === 'effectScatter') {
+        const d = params.data as { spot?: Spot }
+        if (d?.spot) openPanel(d.spot)
+      }
+    })
+    window.addEventListener('resize', resizeHandler)
+  } catch {
+    mapError.value = true
+  }
+}
+
+onMounted(loadMap)
 
 onUnmounted(() => {
   window.removeEventListener('resize', resizeHandler)
@@ -228,6 +239,11 @@ onUnmounted(() => {
 
     <!-- 第一幕：全屏地图 -->
     <div class="map-stage"><div ref="mapEl"></div></div>
+    <div v-if="mapError" class="load-error map-error">
+      <div class="big">🗺️</div>
+      <p>地图加载失败——网络或服务暂时不可用。</p>
+      <button class="retry" @click="loadMap">重 试</button>
+    </div>
 
     <!-- 统计浮签 -->
     <aside v-if="stats" class="stats-flag" aria-label="足迹统计">

@@ -391,3 +391,35 @@ img.cover-fallback {
 
 /* 名录/编年成员头像的兜底色环 */
 .members span.more { background: var(--coral-soft); color: var(--coral-deep); }
+
+/* ---------- 加载失败态（#13：每个数据视图都要有 error 分支） ---------- */
+.load-error {
+  padding: 56px 20px;
+  text-align: center;
+  color: var(--gray);
+  font-size: 14px;
+}
+.load-error .big { font-size: 40px; margin-bottom: 8px; }
+.load-error .retry {
+  border: 1px solid var(--coral);
+  color: var(--coral-deep);
+  background: none;
+  border-radius: 999px;
+  padding: 6px 22px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: .18s;
+}
+.load-error .retry:hover { background: var(--coral); color: #fff; }
+.map-error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  padding: 28px 36px;
+}

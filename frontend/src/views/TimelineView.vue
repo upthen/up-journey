@@ -7,7 +7,8 @@ import DisplayNav from '@/components/DisplayNav.vue'
 import { dateRange, memberLabel } from '@/utils/format'
 import type { TripCard } from '@/types'
 
-const trips = ref<TripCard[]>([])
+const trips = ref<TripCard[] | null>(null)
+const error = ref(false)
 
 interface YearGroup {
   year: number
@@ -17,7 +18,7 @@ interface YearGroup {
 
 const groups = computed<YearGroup[]>(() => {
   const byYear = new Map<number, TripCard[]>()
-  for (const t of trips.value) {
+  for (const t of trips.value ?? []) {
     byYear.set(t.year, [...(byYear.get(t.year) ?? []), t])
   }
   return [...byYear.entries()]
@@ -33,8 +34,15 @@ const firstYear = computed(() => {
   return gs.length ? gs[gs.length - 1].year : null
 })
 
-onMounted(async () => {
-  trips.value = await api.trips()
+async function load() {
+  error.value = false
+  trips.value = null
+  try {
+    trips.value = await api.trips()
+  } catch {
+    error.value = true
+    return
+  }
   // 滚动渐显：等 DOM 渲染完再注册观察器（否则 .reveal 拿不到节点，页面会一直隐形）
   await nextTick()
   const els = document.querySelectorAll('.reveal')
@@ -56,7 +64,9 @@ onMounted(async () => {
   window.setTimeout(() => {
     if (!fired) els.forEach((el) => el.classList.add('in'))
   }, 1500)
-})
+}
+
+onMounted(load)
 </script>
 
 <template>
@@ -115,7 +125,12 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div v-else class="empty">
+      <div v-else-if="error" class="load-error">
+        <div class="big">📡</div>
+        <p>编年加载失败——网络或服务暂时不可用。</p>
+        <button class="retry" @click="load">重 试</button>
+      </div>
+      <div v-else-if="trips !== null" class="empty">
         <div class="big">🗓</div>
         <p>还没有发布任何旅行。<router-link to="/">回到地图 →</router-link></p>
       </div>
