@@ -4,7 +4,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { api, photoUrl } from '@/api'
-import DisplayNav from '@/components/DisplayNav.vue'
+import NavBall from '@/components/NavBall.vue'
 import { dateRange, memberLabel } from '@/utils/format'
 import type { TripCard } from '@/types'
 
@@ -44,7 +44,7 @@ function hideImg(e: Event) {
 
 <template>
   <div>
-    <DisplayNav active="list" />
+    <NavBall active="list" />
     <main class="wrap page-pad">
       <section class="page-head">
         <p class="kicker">Journal · 逃生口</p>
