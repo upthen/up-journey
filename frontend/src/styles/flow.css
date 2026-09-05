@@ -36,12 +36,15 @@ a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
 
 /* ---------- 导航（浮岛，同 v3） ---------- */
-.nav { position: fixed; top: 12px; left: 0; right: 0; z-index: 60; }
+/* 条带全宽但视觉只是中央胶囊：pointer-events 收到胶囊上，
+   否则透明条带会挡住下方 z 更低的可点元素（景点面板 ✕ 等） */
+.nav { position: fixed; top: 12px; left: 0; right: 0; z-index: 60; pointer-events: none; }
 .nav-inner {
   max-width: calc(var(--maxw) - 24px); margin: 0 auto; padding: 10px 12px 10px 20px;
   background: rgba(255,255,255,.86); backdrop-filter: blur(14px);
   border-radius: 999px; box-shadow: var(--shadow);
   display: flex; align-items: center; justify-content: space-between;
+  pointer-events: auto;
 }
 .masthead { display: flex; align-items: center; gap: 10px; }
 .masthead .mark { width: 34px; height: 34px; border-radius: 11px; background: var(--coral); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 17px; }
@@ -130,8 +133,9 @@ img { display: block; max-width: 100%; }
 .veil .go:hover { background: var(--coral); transform: translateY(-2px); }
 
 /* ---------- 第二幕：地点故事面板（右侧滑入） ---------- */
+/* top 让位固定导航底缘（~72px）：中窄屏下胶囊与面板物理重叠时保证 ✕ 可点 */
 .panel {
-  position: fixed; top: 12px; bottom: 12px; right: 12px; z-index: 50;
+  position: fixed; top: 84px; bottom: 12px; right: 12px; z-index: 50;
   width: min(400px, calc(100vw - 24px));
   background: rgba(255,255,255,.96); backdrop-filter: blur(16px);
   border-radius: var(--r-lg); box-shadow: var(--shadow-lg);
