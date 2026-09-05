@@ -66,11 +66,29 @@ def _first_content_photo(content: str | None) -> str | None:
     return unquote(m.group(1)) if m else None
 
 
+# 相册目录扫描结果缓存（路径 → (扫描时刻, 首图)）：列表页对每个无封面行程
+# 都会实时扫盘，行程多时接口变慢（#23）。TTL 60s——新加照片最多延迟一分钟出现在兜底封面。
+_album_cache: dict[str, tuple[float, list[str]]] = {}
+_ALBUM_CACHE_TTL = 60.0
+
+
+def _scan_album_cached(rel: str) -> list[str]:
+    import time
+
+    now = time.monotonic()
+    hit = _album_cache.get(rel)
+    if hit and now - hit[0] < _ALBUM_CACHE_TTL:
+        return hit[1]
+    photos = scan_album(rel)
+    _album_cache[rel] = (now, photos)
+    return photos
+
+
 def _fallback_cover(trip: Trip) -> str | None:
     """卡片封面兜底：未手动选封面时，取第一个配置了相册的景点的首图，否则取正文首图。"""
     for a in trip.attractions:
         if a.album_rel_path:
-            photos = scan_album(a.album_rel_path)
+            photos = _scan_album_cached(a.album_rel_path)
             if photos:
                 return photos[0]
     return _first_content_photo(trip.content)

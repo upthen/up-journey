@@ -14,6 +14,7 @@ import { sanitizeContent } from '@/utils/sanitize'
 const route = useRoute()
 const trip = ref<TripDetail | null>(null)
 const notFound = ref(false)
+const loadError = ref(false)
 
 const safeContent = computed(() => sanitizeContent(trip.value?.content))
 const cover = computed(() => {
@@ -34,12 +35,15 @@ const chart = shallowRef<echarts.ECharts>()
 let resizeHandler = () => chart.value?.resize()
 
 function renderMiniMap(t: TripDetail) {
+  const inChina = ([lng, lat]: number[]) => lng >= 73 && lng <= 135.5 && lat >= 17 && lat <= 54
   const spots = t.attractions
     .filter((a) => a.resolved_lng !== null && a.resolved_lat !== null)
     .map((a) => ({ name: a.name, value: [a.resolved_lng!, a.resolved_lat!] }))
+    .filter((s) => inChina(s.value))
   const cityPath = t.cities
     .filter((c) => c.lng !== null && c.lat !== null)
     .map((c) => [c.lng!, c.lat!])
+    .filter(inChina)
   if (!spots.length && !cityPath.length) return
 
   const lons = [...spots.map((s) => s.value[0]), ...cityPath.map((c) => c[0])]
@@ -109,16 +113,20 @@ function renderMiniMap(t: TripDetail) {
 
 async function load(slug: string) {
   notFound.value = false
+  loadError.value = false
   trip.value = null
   try {
     trip.value = await api.trip(slug)
-  } catch {
-    notFound.value = true
+  } catch (e: unknown) {
+    // 404 才是「不存在/未发布」；500/网络故障是服务问题，文案不混用（#23）
+    notFound.value = (e as { response?: { status?: number } })?.response?.status === 404
+    loadError.value = !notFound.value
     return
   }
   if (!echarts.getMap('china')) {
-    const geo = await fetch('/china.json').then((r) => r.json())
-    echarts.registerMap('china', geo)
+    const res = await fetch('/china.json')
+    if (!res.ok) return // 地图小卡片缺图层时正文照常，只是卡片为空
+    echarts.registerMap('china', await res.json())
   }
   renderMiniMap(trip.value)
 }
@@ -143,6 +151,7 @@ onUnmounted(() => {
       <section class="trip-hero">
         <div class="ph">
           <img v-if="cover" :src="photoUrl(cover, 'full')" :alt="trip.title" />
+          <div v-else class="ph-empty">🏔️</div>
         </div>
         <div class="veil2"></div>
         <div class="body">
@@ -231,6 +240,13 @@ onUnmounted(() => {
       <div class="empty">
         <div class="big">🗺</div>
         <p>这篇游记不存在或尚未发布。<router-link to="/">回到地图 →</router-link></p>
+      </div>
+    </main>
+    <main v-else-if="loadError" class="wrap page-pad">
+      <div class="load-error">
+        <div class="big">📡</div>
+        <p>游记加载失败——网络或服务暂时不可用。</p>
+        <button class="retry" @click="load(String(route.params.slug))">重 试</button>
       </div>
     </main>
     <main v-else class="wrap page-pad">

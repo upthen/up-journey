@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ElMessage } from 'element-plus'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -11,7 +12,11 @@ const meta = useMetaStore()
 const authed = ref(false)
 
 async function logout() {
-  await api.admin.logout()
+  try {
+    await api.admin.logout()
+  } catch {
+    ElMessage.error('退出请求失败，本地会话仍会清除')
+  }
   router.push('/admin/login')
 }
 

@@ -191,6 +191,7 @@ function selectYear(y: 'all' | number) {
 function openPanel(spot: Spot) {
   openSpot.value = spot
   hintGone.value = true
+  chart.value?.dispatchAction({ type: 'hideTip' }) // 悬停 tooltip 不随面板驻留（#23）
 }
 function closePanel() {
   openSpot.value = null

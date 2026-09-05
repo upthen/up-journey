@@ -78,7 +78,7 @@ img { display: block; max-width: 100%; }
   background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
   border-radius: 999px; padding: 6px; box-shadow: var(--shadow-lg);
   max-width: calc(100vw - 32px); overflow-x: auto; scrollbar-width: none;
-}
+  mask-image: linear-gradient(to right, #000 82%, transparent); }
 .year-dock::-webkit-scrollbar { display: none; }
 .year-dock button {
   border: none; background: transparent; font-family: var(--sans); cursor: pointer;
@@ -340,6 +340,8 @@ img { display: block; max-width: 100%; }
 @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
 
 @media (max-width: 640px) {
+  /* 双 chip 同行在 390px 会贴脸碰撞：legend 抬到 stage-chip 上方（#23） */
+  .legend-chip { bottom: 138px; }
   .tl { padding-left: 26px; }
   .tl-year { top: 70px; font-size: 22px; padding-right: 12px; }
   .tl-year::before { left: -23px; width: 12px; height: 12px; border-width: 3px; }

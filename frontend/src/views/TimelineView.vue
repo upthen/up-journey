@@ -91,6 +91,7 @@ onMounted(load)
               <router-link v-if="t.cover_photo" class="cov" :to="`/trip/${t.slug}`">
                 <img :src="photoUrl(t.cover_photo, 'thumb')" :alt="t.title" loading="lazy" />
               </router-link>
+              <router-link v-else class="cov" :to="`/trip/${t.slug}`"><img class="cover-fallback" alt="" aria-hidden="true" /></router-link>
               <div class="body">
                 <div class="date">{{ dateRange(t.start_date, t.end_date) }}</div>
                 <h3 class="t"><router-link :to="`/trip/${t.slug}`">{{ t.title }}</router-link></h3>

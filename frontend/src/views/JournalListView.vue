@@ -47,7 +47,7 @@ onMounted(load)
         <p class="kicker">Journal · 逃生口</p>
         <h1>游记名录</h1>
         <p class="sub">
-          喜欢按部就班往下翻的人走这里——按时间倒序的全部 {{ shown.length }} 篇游记。<router-link
+          喜欢按部就班往下翻的人走这里——按时间倒序的共 {{ shown.length }} 篇游记。<router-link
             to="/"
             style="color: var(--coral-deep); font-weight: 600"
             >回到地图探索 →</router-link

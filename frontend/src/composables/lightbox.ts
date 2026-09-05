@@ -9,8 +9,10 @@ export const lightbox = reactive({
   open(path: string) {
     lightbox.src = photoUrl(path, 'full')
     lightbox.show = true
+    document.body.style.overflow = 'hidden' // 灯箱开着时锁背景滚动（#23）
   },
   close() {
     lightbox.show = false
+    document.body.style.overflow = ''
   },
 })

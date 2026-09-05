@@ -2,7 +2,7 @@
 /** 管理端登录：唯一入口是管理员密码（展示端永远免密）。 */
 import { Lock } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { api } from '@/api'
@@ -15,6 +15,16 @@ const unconfigured = ref(false)
 // 401 拦截器整页跳转会带 expired=1：告知「会话过期」而非「密码错误」，
 // 并安抚用户——未保存内容已自动存在本地，登录回到编辑页后可恢复（#12）
 const expired = route.query.expired === '1'
+
+onMounted(async () => {
+  // 已登录访问登录页：直接回管理端（#23）
+  try {
+    await api.admin.session()
+    router.replace('/admin/trips')
+  } catch {
+    /* 未登录，停留 */
+  }
+})
 
 async function submit() {
   if (!password.value) return

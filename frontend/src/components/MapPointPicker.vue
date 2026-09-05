@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /** 小地图选点：点一下地图落点，用于景点的精确定位（不精调则跟随城市中心）。 */
 import * as echarts from 'echarts'
-import { nextTick, ref, shallowRef, watch } from 'vue'
+import { nextTick, onUnmounted, ref, shallowRef, watch } from 'vue'
 
 const props = defineProps<{
   modelValue: boolean
@@ -17,12 +17,24 @@ const emit = defineEmits<{
 const mapEl = ref<HTMLDivElement>()
 const chart = shallowRef<echarts.ECharts>()
 const picked = ref<{ lng: number; lat: number } | null>(null)
+const loadError = ref(false)
+
+onUnmounted(() => {
+  chart.value?.dispose()
+  chart.value = undefined
+})
 
 async function init() {
   await nextTick()
-  if (!echarts.getMap('china')) {
-    const geo = await fetch('/china.json').then((r) => r.json())
-    echarts.registerMap('china', geo)
+  try {
+    if (!echarts.getMap('china')) {
+      const res = await fetch('/china.json')
+      if (!res.ok) throw new Error(`china.json ${res.status}`)
+      echarts.registerMap('china', await res.json())
+    }
+  } catch {
+    loadError.value = true
+    return
   }
   if (!mapEl.value) return
   chart.value?.dispose()
@@ -109,7 +121,7 @@ watch(
       <div ref="mapEl" class="map"></div>
       <p class="vals">
         <template v-if="picked">已选：{{ picked.lng }}, {{ picked.lat }}</template>
-        <template v-else>尚未选点</template>
+        <template v-else><span v-if="loadError">⚠️ 地图加载失败，请稍后重试</span><span v-else>尚未选点</span></template>
       </p>
     </div>
     <template #footer>
