@@ -199,6 +199,94 @@ function cityRowLabel(c: CityRow): string {
   return c.city_name || '?'
 }
 
+/* ---------- 同行成员与标签（#24：内联实时输入，移除专门维护页） ---------- */
+const MAX_NAME_LEN = 16
+const newMemberName = ref('')
+const newTagName = ref('')
+const creatingMember = ref(false)
+const creatingTag = ref(false)
+
+// 重名不打断：前端预判（或后端 409）时直接选中已有项
+function selectExistingMember(id: number) {
+  if (!form.member_ids.includes(id)) form.member_ids.push(id)
+}
+
+async function addMember() {
+  const name = newMemberName.value.trim()
+  if (!name) {
+    ElMessage.warning('请输入成员名')
+    return
+  }
+  if (name.length > MAX_NAME_LEN) {
+    ElMessage.warning(`成员名需 1-${MAX_NAME_LEN} 个字符`)
+    return
+  }
+  const existing = meta.members.find((m) => m.name === name || m.nickname === name)
+  if (existing) {
+    selectExistingMember(existing.id)
+    newMemberName.value = ''
+    return
+  }
+  creatingMember.value = true
+  try {
+    const created = await api.admin.createMember({ name })
+    meta.members.push(created) // 同步本地字典，其他页面/编辑页立即可复用
+    selectExistingMember(created.id)
+    newMemberName.value = ''
+    ElMessage.success(`已添加成员「${name}」`)
+  } catch {
+    ElMessage.error('添加成员失败，请稍后重试')
+  } finally {
+    creatingMember.value = false
+  }
+}
+
+async function addTag() {
+  const name = newTagName.value.trim()
+  if (!name) {
+    ElMessage.warning('请输入标签名')
+    return
+  }
+  if (name.length > MAX_NAME_LEN) {
+    ElMessage.warning(`标签名需 1-${MAX_NAME_LEN} 个字符`)
+    return
+  }
+  const pickExisting = async () => {
+    // 409 等情况下以服务端字典为准，避免本地缓存漏项
+    await meta.refresh()
+    const dup = meta.tags.find((t) => t.name === name)
+    if (dup) {
+      if (!form.tag_ids.includes(dup.id)) form.tag_ids.push(dup.id)
+      newTagName.value = ''
+      return true
+    }
+    return false
+  }
+  if (meta.tags.some((t) => t.name === name)) {
+    await pickExisting()
+    return
+  }
+  creatingTag.value = true
+  try {
+    const created = await api.admin.createTag(name)
+    meta.tags.push(created)
+    if (!form.tag_ids.includes(created.id)) form.tag_ids.push(created.id)
+    newTagName.value = ''
+    ElMessage.success(`已添加标签「${name}」`)
+  } catch (e: unknown) {
+    const err = e as { response?: { status?: number } }
+    if (err.response?.status === 409) {
+      // 标签全局唯一：重名不算错，直接选中已有项
+      const picked = await pickExisting()
+      if (!picked) ElMessage.error('添加标签失败：标签名已被占用')
+    } else {
+      ElMessage.error('添加标签失败，请稍后重试')
+    }
+  } finally {
+    creatingTag.value = false
+  }
+}
+
 /* ---------- 城市与路线 ---------- */
 function addDomesticCity(code: string) {
   if (form.cities.some((c) => c.city_code === code)) return
@@ -718,7 +806,7 @@ onMounted(async () => {
 
     <section class="ad-panel">
       <h4>同行成员与标签</h4>
-      <p class="hint">成员与标签在左侧菜单里维护，这里只做勾选。</p>
+      <p class="hint">点选已有项即可勾选；也可直接输入新名字回车创建，创建后自动选中并长期保存，下次编辑可复用。</p>
       <div class="mb-4">
         <div class="text-xs text-gray-400 mb-2">同行成员</div>
         <div class="chips">
@@ -731,6 +819,19 @@ onMounted(async () => {
           >
             {{ m.nickname || m.name }}
           </span>
+          <el-input
+            v-model="newMemberName"
+            class="inline-new"
+            size="small"
+            maxlength="16"
+            placeholder="＋ 新成员，回车添加"
+            :disabled="creatingMember"
+            @keydown.enter="addMember"
+          >
+            <template #append>
+              <el-button link type="primary" :loading="creatingMember" @click="addMember">添加</el-button>
+            </template>
+          </el-input>
         </div>
       </div>
       <div>
@@ -745,6 +846,19 @@ onMounted(async () => {
           >
             {{ t.name }}
           </span>
+          <el-input
+            v-model="newTagName"
+            class="inline-new"
+            size="small"
+            maxlength="16"
+            placeholder="＋ 新标签，回车添加"
+            :disabled="creatingTag"
+            @keydown.enter="addTag"
+          >
+            <template #append>
+              <el-button link type="primary" :loading="creatingTag" @click="addTag">添加</el-button>
+            </template>
+          </el-input>
         </div>
       </div>
     </section>

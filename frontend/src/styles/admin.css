@@ -138,6 +138,8 @@ body.admin-body { background: #F3F1EC; }
 .chips .chip:hover { border-color: var(--coral); color: var(--coral-deep); }
 .chips .chip.on { background: var(--ink); border-color: var(--ink); color: #fff; }
 .chips .chip.on.child::after { content: "· 娃"; color: var(--coral); margin-left: 4px; font-size: 11px; }
+/* chips 末尾的内联新增输入框（#24：成员/标签实时录入） */
+.chips .inline-new { width: 190px; }
 
 /* 相册浏览器（选图对话框） */
 .album-browser .crumbs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; margin-bottom: 12px; color: var(--ink-2); }

@@ -48,8 +48,6 @@ onMounted(async () => {
       <aside class="ad-side">
         <nav class="ad-menu">
           <router-link to="/admin/trips" :class="{ active: route.name === 'admin-trips' || route.name === 'admin-trip-edit' || route.name === 'admin-trip-new' }">🗂 旅行管理</router-link>
-          <router-link to="/admin/members" :class="{ active: route.name === 'admin-members' }">👨‍👩‍👦 家庭成员</router-link>
-          <router-link to="/admin/tags" :class="{ active: route.name === 'admin-tags' }">🏷 标签管理</router-link>
         </nav>
       </aside>
       <main class="ad-main">

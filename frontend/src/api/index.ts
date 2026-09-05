@@ -53,17 +53,10 @@ export const api = {
     updateTrip: (id: number, payload: TripInput) =>
       http.put<TripDetail>(`/admin/trips/${id}`, payload).then((r) => r.data),
     deleteTrip: (id: number) => http.delete(`/admin/trips/${id}`),
-    members: () => http.get<Member[]>('/admin/members').then((r) => r.data),
+    // 成员/标签只在旅程编辑页内联创建（#24）：仅保留创建接口，重命名/删除能力随维护页移除
     createMember: (payload: { name: string; nickname?: string; is_child?: boolean }) =>
       http.post<Member>('/admin/members', payload).then((r) => r.data),
-    updateMember: (id: number, payload: { name?: string; nickname?: string; is_child?: boolean }) =>
-      http.put<Member>(`/admin/members/${id}`, payload).then((r) => r.data),
-    deleteMember: (id: number) => http.delete(`/admin/members/${id}`),
-    tags: () => http.get<Tag[]>('/admin/tags').then((r) => r.data),
     createTag: (name: string) => http.post<Tag>('/admin/tags', { name }).then((r) => r.data),
-    updateTag: (id: number, name: string) =>
-      http.put<Tag>(`/admin/tags/${id}`, { name }).then((r) => r.data),
-    deleteTag: (id: number) => http.delete(`/admin/tags/${id}`),
     cities: (params?: { province?: string; level?: number }) =>
       http.get<City[]>('/admin/cities', { params }).then((r) => r.data),
     album: (path?: string) =>
