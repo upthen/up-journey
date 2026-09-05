@@ -2,6 +2,7 @@
 
 import type { IDomEditor, IEditorConfig } from '@wangeditor/editor'
 import { Boot } from '@wangeditor/editor'
+import { ElMessage } from 'element-plus'
 
 let pickerOpener: (() => void) | null = null
 
@@ -53,4 +54,15 @@ export const albumToolbarKeys = ['albumImage']
 export const editorConfig = (placeholder: string): Partial<IEditorConfig> => ({
   placeholder,
   MENU_CONF: {},
+  // 粘贴图片拦截（#21）：wangEditor 默认把粘贴的截图转 base64 内联进正文——
+  // 发布后会被展示端 sanitize 剥掉（图片静默消失），且 LongText 字段急速膨胀。
+  // 阻止默认行为，引导走「相册插图」；纯文本/普通富文本粘贴不受影响。
+  customPaste: (_editor: IDomEditor, event: ClipboardEvent) => {
+    const files = event.clipboardData?.files
+    if (files && Array.from(files).some((f) => f.type.startsWith('image/'))) {
+      ElMessage.warning('正文不支持直接粘贴图片：请通过工具栏「相册插图」选择')
+      return false
+    }
+    return true
+  },
 })
