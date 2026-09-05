@@ -21,7 +21,7 @@ http.interceptors.response.use(undefined, (error) => {
   const url: string = error?.config?.url ?? ''
   if (status === 401 && url.includes('/admin') && !url.endsWith('/login')) {
     if (window.location.pathname === '/admin/login') return Promise.reject(error)
-    window.location.href = `/admin/login?next=${encodeURIComponent(window.location.pathname)}`
+    window.location.href = `/admin/login?next=${encodeURIComponent(window.location.pathname)}&expired=1`
   }
   return Promise.reject(error)
 })

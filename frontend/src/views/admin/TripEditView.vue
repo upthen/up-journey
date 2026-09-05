@@ -5,8 +5,8 @@
 景点与相册目录 → 按天行程 → 成员与标签 → 游记正文（相册插图）。
 */
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
-import { ElMessage } from 'element-plus'
-import { computed, onMounted, onUnmounted, reactive, ref, shallowRef } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { computed, onMounted, onUnmounted, reactive, ref, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { api, photoUrl } from '@/api'
@@ -85,6 +85,100 @@ const form = reactive({
 
 const loading = ref(false)
 const coverCandidates = ref<{ dir: string; photos: string[] }[]>([])
+
+/* ---------- 本地草稿（#12：会话过期/误关页面时输入不丢） ---------- */
+// 每次表单变化防抖写入 localStorage；进入编辑页时若草稿与已加载数据不同，
+// 弹窗询问恢复。401 整页跳登录不影响草稿，重登回来即可恢复。
+const draftKey = computed(() => `uj-trip-draft:${tripId.value ?? 'new'}`)
+const restoring = ref(true)
+let draftTimer: number | undefined
+
+function draftPayload() {
+  const { title, slug, dates, status, isForeign, country, summary, content, cover_photo, cities, attractions, days, member_ids, tag_ids } = form
+  return { title, slug, dates, status, isForeign, country, summary, content, cover_photo, cities, attractions, days, member_ids, tag_ids }
+}
+
+// 行内 key 是渲染用的自增序号，比较内容时剔除
+function formSig() {
+  const d = draftPayload()
+  const strip = (rows: { key: number }[]) => rows.map(({ key, ...rest }) => rest)
+  return JSON.stringify({ ...d, cities: strip(d.cities), attractions: strip(d.attractions), days: strip(d.days) })
+}
+
+function savedSig(data: ReturnType<typeof draftPayload>) {
+  const strip = (rows: { key: number }[]) => rows.map(({ key, ...rest }) => rest)
+  return JSON.stringify({ ...data, cities: strip(data.cities), attractions: strip(data.attractions), days: strip(data.days) })
+}
+
+function writeDraft() {
+  if (restoring.value) return
+  try {
+    localStorage.setItem(draftKey.value, JSON.stringify({ at: Date.now(), data: draftPayload() }))
+  } catch {
+    /* 隐私模式/存储满：草稿静默降级 */
+  }
+}
+
+function clearDraft() {
+  try {
+    localStorage.removeItem(draftKey.value)
+  } catch {}
+}
+
+watch(form, () => {
+  if (restoring.value) return
+  window.clearTimeout(draftTimer)
+  draftTimer = window.setTimeout(writeDraft, 400)
+}, { deep: true })
+
+function flushDraft() {
+  if (restoring.value) return
+  window.clearTimeout(draftTimer)
+  writeDraft()
+}
+window.addEventListener('beforeunload', flushDraft)
+onUnmounted(() => window.removeEventListener('beforeunload', flushDraft))
+
+function applyDraft(data: ReturnType<typeof draftPayload>) {
+  form.title = data.title ?? ''
+  form.slug = data.slug ?? ''
+  form.dates = data.dates ?? []
+  form.status = data.status ?? 'draft'
+  form.isForeign = data.isForeign ?? false
+  form.country = data.country ?? ''
+  form.summary = data.summary ?? ''
+  form.content = data.content ?? ''
+  form.cover_photo = data.cover_photo ?? null
+  form.cities = (data.cities ?? []).map((c) => ({ ...c, key: nextKey() }))
+  form.attractions = (data.attractions ?? []).map((a) => ({ ...a, key: nextKey() }))
+  form.days = (data.days ?? []).map((d) => ({ ...d, key: nextKey() }))
+  form.member_ids = data.member_ids ?? []
+  form.tag_ids = data.tag_ids ?? []
+}
+
+async function maybeRestoreDraft() {
+  let saved: { at: number; data: ReturnType<typeof draftPayload> } | null = null
+  try {
+    saved = JSON.parse(localStorage.getItem(draftKey.value) ?? 'null')
+  } catch {
+    saved = null
+  }
+  if (saved?.data && savedSig(saved.data) !== formSig()) {
+    const at = new Date(saved.at).toLocaleString()
+    try {
+      await ElMessageBox.confirm(`检测到未保存的本地草稿（${at}），恢复后当前表单内容将被覆盖。`, '恢复草稿', {
+        confirmButtonText: '恢复草稿',
+        cancelButtonText: '丢弃草稿',
+        type: 'warning',
+      })
+      applyDraft(saved.data)
+    } catch {
+      /* 用户选择丢弃 */
+    }
+  }
+  clearDraft()
+  restoring.value = false
+}
 
 const domesticCities = computed(() => form.cities.filter((c) => c.city_code))
 
@@ -341,6 +435,7 @@ async function save(status?: 'draft' | 'published') {
       await api.admin.createTrip(payload)
     }
     ElMessage.success(form.status === 'published' ? '已发布' : '已保存草稿')
+    clearDraft()
     router.push('/admin/trips')
   } catch (e: unknown) {
     const detail = (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail
@@ -352,6 +447,7 @@ onMounted(async () => {
   await meta.ensure()
   cities.value = await api.admin.cities()
   if (tripId.value) await loadTrip(tripId.value)
+  await maybeRestoreDraft()
 })
 </script>
 

@@ -12,6 +12,9 @@ const route = useRoute()
 const password = ref('')
 const loading = ref(false)
 const unconfigured = ref(false)
+// 401 拦截器整页跳转会带 expired=1：告知「会话过期」而非「密码错误」，
+// 并安抚用户——未保存内容已自动存在本地，登录回到编辑页后可恢复（#12）
+const expired = route.query.expired === '1'
 
 async function submit() {
   if (!password.value) return
@@ -52,6 +55,9 @@ async function submit() {
       <el-button type="primary" size="large" native-type="submit" :loading="loading" style="width: 100%; margin-top: 14px">
         登 录
       </el-button>
+      <p v-if="expired" class="warn">
+        登录已过期，请重新登录。编辑页未保存的内容已自动保存在本机浏览器中，登录回到编辑页后可恢复。
+      </p>
       <p v-if="unconfigured" class="warn">
         服务端尚未配置管理密码：在 NAS 部署目录的 .env 里设置 <code>ADMIN_PASSWORD</code> 并重启 api 容器。
       </p>
