@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session, selectinload
 from ..config import get_settings
 from ..models import Attraction, City, FamilyMember, Tag, Trip, TripCity
 from ..schemas import (
+    AbroadTripOut,
     AttractionOut,
     DayOut,
     FootprintsOut,
@@ -238,10 +239,12 @@ def compute_footprints(db: Session) -> FootprintsOut:
     trips = published_trips(db)
 
     province_hits: dict[str, set[int]] = {}
+    province_year_hits: dict[int, dict[str, set[int]]] = {}
     for t in trips:
         for tc in t.cities:
             if tc.city_code and tc.city:
                 province_hits.setdefault(tc.city.province_name, set()).add(t.id)
+                province_year_hits.setdefault(t.start_date.year, {}).setdefault(tc.city.province_name, set()).add(t.id)
 
     spots: list[SpotOut] = []
     routes: list[RouteOut] = []
@@ -286,10 +289,19 @@ def compute_footprints(db: Session) -> FootprintsOut:
     return FootprintsOut(
         years=sorted(trips_by_year, reverse=True),
         provinces={name: len(ids) for name, ids in province_hits.items()},
+        provinces_by_year={
+            year: {name: len(ids) for name, ids in by_prov.items()}
+            for year, by_prov in province_year_hits.items()
+        },
         spots=spots,
         routes=routes,
         timeline=[
             TimelineYearOut(year=y, trip_count=trips_by_year[y], total_days=days_by_year[y])
             for y in sorted(trips_by_year, reverse=True)
+        ],
+        abroad_trips=[
+            AbroadTripOut(year=t.start_date.year, title=t.title, slug=t.slug, country=t.country)
+            for t in trips
+            if t.country
         ],
     )

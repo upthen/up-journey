@@ -43,6 +43,10 @@ const kicker = computed(() => {
 const headlineYears = computed(() => stats.value?.years ?? 0)
 const headlineProvinces = computed(() => stats.value?.provinces ?? 0)
 
+/* ---------- 空年份/境外入口（#16） ---------- */
+const yearSpots = computed(() => (footprints.value?.spots ?? []).filter((s) => currentYear.value === 'all' || s.year === currentYear.value))
+const yearAbroad = computed(() => (footprints.value?.abroad_trips ?? []).filter((a) => currentYear.value === 'all' || a.year === currentYear.value))
+
 /* ---------- 地图 ---------- */
 function spotData(year: 'all' | number) {
   const spots = footprints.value?.spots ?? []
@@ -59,8 +63,10 @@ function lineData(year: 'all' | number) {
   }
   return out
 }
-function provinceData() {
-  return Object.entries(footprints.value?.provinces ?? {}).map(([name, count]) => ({
+function provinceData(year: 'all' | number) {
+  // 年份联动：分年省份数据来自 provinces_by_year（JSON 键为字符串年份）
+  const src = year === 'all' ? footprints.value?.provinces : footprints.value?.provinces_by_year?.[year]
+  return Object.entries(src ?? {}).map(([name, count]) => ({
     name,
     value: Math.min(count, 3), // 三档色阶封顶
   }))
@@ -113,7 +119,7 @@ function buildOption(): echarts.EChartsOption {
         map: 'china',
         geoIndex: 0,
         selectedMode: false,
-        data: provinceData(),
+        data: provinceData('all'),
       },
       {
         name: '景点',
@@ -157,7 +163,11 @@ function buildOption(): echarts.EChartsOption {
 
 function applyYearFilter() {
   chart.value?.setOption({
-    series: [{}, { data: spotData(currentYear.value) }, { data: lineData(currentYear.value) }],
+    series: [
+      { data: provinceData(currentYear.value) }, // 省份高亮随年份联动（#16）
+      { data: spotData(currentYear.value) },
+      { data: lineData(currentYear.value) },
+    ],
   })
 }
 
@@ -268,6 +278,20 @@ onUnmounted(() => {
       <button v-for="y in footprints.years" :key="y" :class="{ on: currentYear === y }" @click="selectYear(y)">
         {{ y }}
       </button>
+    </div>
+
+    <!-- 该年份无境内足迹：境外入口 / 空态引导（#16） -->
+    <div v-if="veilGone && footprints && yearSpots.length === 0" class="abroad-chip">
+      <template v-if="yearAbroad.length">
+        <span class="t">🛫 {{ currentYear === 'all' ? '有足迹在这些境外地方' : currentYear + ' 年的足迹在境外' }}</span>
+        <router-link v-for="a in yearAbroad" :key="a.slug" class="abroad-link" :to="`/trip/${a.slug}`">
+          {{ a.title }}（{{ a.country }} · {{ a.year }}）→
+        </router-link>
+      </template>
+      <span v-else class="t">
+        🧭 {{ currentYear === 'all' ? '还没有足迹——' : currentYear + ' 年暂无境内足迹——' }}
+        <router-link to="/admin">去录入游记 →</router-link>
+      </span>
     </div>
 
     <!-- 探索提示 -->

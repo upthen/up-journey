@@ -5,7 +5,15 @@ from tests.conftest import CITY_CODES, create_trip, make_jpeg
 
 def test_footprints_empty(client):
     data = client.get("/api/v1/footprints").json()
-    assert data == {"years": [], "provinces": {}, "spots": [], "routes": [], "timeline": []}
+    assert data == {
+        "years": [],
+        "provinces": {},
+        "provinces_by_year": {},
+        "spots": [],
+        "routes": [],
+        "timeline": [],
+        "abroad_trips": [],
+    }
 
 
 def test_footprints_provinces_count_distinct_trips(client):
@@ -92,3 +100,18 @@ def test_footprints_years_and_timeline(client):
     tl2024 = next(t for t in data["timeline"] if t["year"] == 2024)
     assert tl2024["trip_count"] == 2
     assert tl2024["total_days"] == 7 + 3
+
+
+def test_footprints_provinces_by_year_and_abroad(client):
+    """年份筛选联动需要分年省份数据；境外行程要单独给出入口（#16）。"""
+    create_trip(client, title="云南2024", start_date="2024-05-01", end_date="2024-05-02",
+                cities=[{"city_code": CITY_CODES["昆明市"]}])
+    create_trip(client, title="京都", country="日本", start_date="2018-04-01", end_date="2018-04-02",
+                cities=[{"city_name": "京都"}])
+
+    data = client.get("/api/v1/footprints").json()
+    # JSON 序列化会把 int 键转字符串；前端用数字索引时 JS 自动转字符串键，行为一致
+    assert data["provinces_by_year"] == {"2024": {"云南省": 1}}
+    assert data["abroad_trips"] == [
+        {"year": 2018, "title": "京都", "slug": data["abroad_trips"][0]["slug"], "country": "日本"}
+    ]

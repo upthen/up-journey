@@ -423,3 +423,27 @@ img.cover-fallback {
   box-shadow: var(--shadow);
   padding: 28px 36px;
 }
+
+/* ---------- 空年份 / 境外入口 chip（#16） ---------- */
+.abroad-chip {
+  position: fixed;
+  bottom: 150px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  padding: 8px 18px;
+  font-size: 12.5px;
+  max-width: calc(100vw - 24px);
+}
+.abroad-chip .t { color: var(--gray); }
+.abroad-chip .abroad-link,
+.abroad-chip a { color: var(--coral-deep); font-weight: 600; }

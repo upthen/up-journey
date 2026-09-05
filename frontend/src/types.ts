@@ -133,9 +133,18 @@ export interface TimelineYear {
 export interface Footprints {
   years: number[]
   provinces: Record<string, number>
+  provinces_by_year: Record<string, Record<string, number>> // JSON 键为字符串年份
   spots: Spot[]
   routes: Route[]
   timeline: TimelineYear[]
+  abroad_trips: AbroadTrip[]
+}
+
+export interface AbroadTrip {
+  year: number
+  title: string
+  slug: string
+  country: string
 }
 
 export interface AlbumDir {

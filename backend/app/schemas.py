@@ -207,12 +207,21 @@ class TimelineYearOut(BaseModel):
     total_days: int
 
 
+class AbroadTripOut(BaseModel):
+    year: int
+    title: str
+    slug: str
+    country: str
+
+
 class FootprintsOut(BaseModel):
     years: list[int]
     provinces: dict[str, int]  # GeoJSON 省份名 → 到访次数（trip 去重）
+    provinces_by_year: dict[int, dict[str, int]] = {}  # 年份 → 省份 → 到访 trip 数（#16）
     spots: list[SpotOut]
     routes: list[RouteOut]
     timeline: list[TimelineYearOut]
+    abroad_trips: list[AbroadTripOut] = []  # 境外行程：中国地图上没有点位，需要单独的入口（#16）
 
 
 class MetaOut(BaseModel):
