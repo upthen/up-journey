@@ -180,6 +180,12 @@ body.admin-body { background: #F3F1EC; }
 /* 弹层内边距收窄 + 选项圆角：hover 背景不顶出弹层圆角 */
 .el-select-dropdown { padding: 4px; }
 .el-select-dropdown__item { border-radius: 6px; }
+/* popper 弹层圆角：EP 在组件级重新定义了 --el-popper-border-radius（回落 4px），
+   :root 的变量设置够不着弹层内部——直接覆盖弹层类（#10/#29） */
+.el-popper.el-select__popper,
+.el-popper.el-date__popper {
+  border-radius: var(--el-border-radius-base);
+}
 
 /* ---------- 加载失败横幅（#14） ---------- */
 .ad-error-bar {
