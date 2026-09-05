@@ -364,12 +364,16 @@ onUnmounted(() => {
 })
 
 /* ---------- 加载 ---------- */
+const originalSlug = ref('')
+const slugChanged = computed(() => tripId.value !== null && form.slug.trim() !== originalSlug.value)
+
 async function loadTrip(id: number) {
   loading.value = true
   try {
     const t: TripDetail = await api.admin.trip(id)
     form.title = t.title
     form.slug = t.slug
+    originalSlug.value = t.slug
     form.dates = [t.start_date, t.end_date]
     form.status = t.status as 'draft' | 'published'
     form.isForeign = !!t.country || t.cities.some((c) => !c.city_code)
@@ -499,7 +503,12 @@ onMounted(async () => {
       <el-form label-width="110px">
         <el-row :gutter="16">
           <el-col :span="12"><el-form-item label="标题" required><el-input v-model="form.title" maxlength="128" /></el-form-item></el-col>
-          <el-col :span="12"><el-form-item label="Slug"><el-input v-model="form.slug" maxlength="64" placeholder="自动生成" /></el-form-item></el-col>
+          <el-col :span="12">
+              <el-form-item label="Slug">
+                <el-input v-model="form.slug" maxlength="64" placeholder="自动生成" />
+                <p v-if="slugChanged" class="warn-hint hint">⚠️ 修改 slug 后，旧链接 /trip/{{ originalSlug }} 将失效。</p>
+              </el-form-item>
+            </el-col>
         </el-row>
         <el-row :gutter="16">
           <el-col :span="12">

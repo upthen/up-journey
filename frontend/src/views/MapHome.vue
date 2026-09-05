@@ -239,6 +239,9 @@ onUnmounted(() => {
   window.removeEventListener('resize', resizeHandler)
   chart.value?.dispose()
 })
+function hideImg(e: Event) {
+  (e.target as HTMLImageElement).style.visibility = 'hidden' // 相册文件被移除等 404 场景不显示破图（#23）
+}
 </script>
 
 <template>
@@ -312,7 +315,7 @@ onUnmounted(() => {
     <aside v-if="openSpot" class="panel open">
       <div class="head">
         <div v-if="openSpot.photos.length" class="ph">
-          <img :src="photoUrl(openSpot.photos[0], 'full')" :alt="openSpot.name" />
+          <img :src="photoUrl(openSpot.photos[0], 'full')" :alt="openSpot.name" @error="hideImg" />
         </div>
         <div v-else class="ph ph-placeholder"></div>
         <button class="close" aria-label="关闭" @click="closePanel">✕</button>
@@ -325,7 +328,7 @@ onUnmounted(() => {
         <p v-if="openSpot.note" class="blurb">{{ openSpot.note }}</p>
         <div v-if="openSpot.photos.length" class="thumbs">
           <div v-for="p in openSpot.photos.slice(0, 3)" :key="p" class="ph">
-            <img :src="photoUrl(p, 'thumb')" alt="" loading="lazy" />
+            <img :src="photoUrl(p, 'thumb')" alt="" loading="lazy" @error="hideImg" />
           </div>
         </div>
         <div class="related">

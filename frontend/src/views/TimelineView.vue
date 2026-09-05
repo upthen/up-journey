@@ -67,6 +67,9 @@ async function load() {
 }
 
 onMounted(load)
+function hideImg(e: Event) {
+  (e.target as HTMLImageElement).style.visibility = 'hidden' // 相册文件被移除等 404 场景不显示破图（#23）
+}
 </script>
 
 <template>
@@ -89,7 +92,7 @@ onMounted(load)
           <article v-for="t in g.trips" :key="t.slug" class="tl-card reveal">
             <div class="row">
               <router-link v-if="t.cover_photo" class="cov" :to="`/trip/${t.slug}`">
-                <img :src="photoUrl(t.cover_photo, 'thumb')" :alt="t.title" loading="lazy" />
+                <img :src="photoUrl(t.cover_photo, 'thumb')" :alt="t.title" loading="lazy" @error="hideImg" />
               </router-link>
               <router-link v-else class="cov" :to="`/trip/${t.slug}`"><img class="cover-fallback" alt="" aria-hidden="true" /></router-link>
               <div class="body">

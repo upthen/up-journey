@@ -140,6 +140,9 @@ onUnmounted(() => {
   window.removeEventListener('resize', resizeHandler)
   chart.value?.dispose()
 })
+function hideImg(e: Event) {
+  (e.target as HTMLImageElement).style.visibility = 'hidden' // 相册文件被移除等 404 场景不显示破图（#23）
+}
 </script>
 
 <template>
@@ -150,7 +153,7 @@ onUnmounted(() => {
 
       <section class="trip-hero">
         <div class="ph">
-          <img v-if="cover" :src="photoUrl(cover, 'full')" :alt="trip.title" />
+          <img v-if="cover" :src="photoUrl(cover, 'full')" :alt="trip.title" @error="hideImg" />
           <div v-else class="ph-empty">🏔️</div>
         </div>
         <div class="veil2"></div>
@@ -187,7 +190,7 @@ onUnmounted(() => {
                 @click="lightbox.open(p)"
                 @keydown.enter="lightbox.open(p)"
               >
-                <img :src="photoUrl(p, 'thumb')" :alt="g.attraction" loading="lazy" />
+                <img :src="photoUrl(p, 'thumb')" :alt="g.attraction" loading="lazy" @error="hideImg" />
               </div>
             </div>
           </div>
