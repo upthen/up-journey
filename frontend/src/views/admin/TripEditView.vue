@@ -478,6 +478,19 @@ async function save(status?: 'draft' | 'published') {
     ElMessage.warning('境外旅行需填写国家')
     return
   }
+  // 名称留空的景点行会被 buildPayload 过滤丢弃，已选相册目录跟着丢——先确认（#27）
+  const dirOnly = form.attractions.filter((a) => !a.name.trim() && a.album_rel_path).length
+  if (dirOnly > 0) {
+    try {
+      await ElMessageBox.confirm(
+        `有 ${dirOnly} 个景点选了相册目录但没填名称，保存后这些目录配置将被丢弃。`,
+        '未命名景点提醒',
+        { confirmButtonText: '仍要保存', cancelButtonText: '返回修改', type: 'warning' },
+      )
+    } catch {
+      return
+    }
+  }
   if (status) form.status = status
   // 外链图片会在展示端 sanitize 被剥掉（src 白名单仅本应用图片服务）——录入时提示（#23）
   const foreignImgs = (form.content.match(/<img\b[^>]*\bsrc="(?!\/api\/v1\/photos\/)[^"]*"/gi) ?? []).length
