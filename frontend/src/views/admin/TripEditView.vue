@@ -282,10 +282,23 @@ function addDay() {
   if (last || form.days.length === 0) next.setDate(next.getDate() + 1)
   form.days.push({ key: nextKey(), date: next.toISOString().slice(0, 10), title: '', note: '' })
 }
-function fillDaysFromRange() {
+async function fillDaysFromRange() {
   if (form.dates.length !== 2) {
     ElMessage.warning('先选择起止日期')
     return
+  }
+  // 已填内容的天会被覆盖且未入库、无法恢复——先确认（#22）
+  const filled = form.days.filter((d) => d.title.trim() || d.note.trim()).length
+  if (filled > 0) {
+    try {
+      await ElMessageBox.confirm(`重新生成将清空已填写的 ${filled} 天行程内容，确定？`, '提示', {
+        confirmButtonText: '重新生成',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+    } catch {
+      return
+    }
   }
   form.days = []
   const d = new Date(form.dates[0])
