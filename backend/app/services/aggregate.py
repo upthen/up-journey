@@ -192,7 +192,9 @@ def compute_stats(db: Session, today: date | None = None) -> StatsOut:
     today = today or date.today()
     trips = published_trips(db)
 
-    years = today.year - min((t.start_date for t in trips), default=today).year if trips else 0
+    # 「走过的年头」= 首末行程年份闭区间跨度；用当前年计算会在数据停更后虚涨（#18）
+    year_list = [t.start_date.year for t in trips]
+    years = max(year_list) - min(year_list) + 1 if year_list else 0
 
     province_codes: set[str] = set()
     city_codes: set[str] = set()

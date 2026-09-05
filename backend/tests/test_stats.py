@@ -18,7 +18,7 @@ def test_stats_counts_trips_days_years(client):
     stats = client.get("/api/v1/stats").json()
     assert stats["trips"] == 2
     assert stats["days"] == 8 + 7
-    assert stats["years"] == 2026 - 2018  # 当前自然年（测试环境 2026）− 首次旅行年份
+    assert stats["years"] == 2024 - 2018 + 1  # 首末行程年份闭区间跨度，与当前自然年无关（#18）
 
 
 def test_stats_drafts_excluded(client):

@@ -24,7 +24,9 @@ def _login(client, password):
 # ---------- 未配置密码：管理端 503，展示端不受影响 ----------
 
 def test_admin_api_503_when_password_unconfigured(anon_client, monkeypatch):
-    monkeypatch.delenv("ADMIN_PASSWORD", raising=False)
+    # 置空而非 delenv：本地 backend/.env 若配置了密码，pydantic-settings 里
+    # 真实环境变量优先于 env_file，置空才能压过它（delenv 压不住 .env）
+    monkeypatch.setenv("ADMIN_PASSWORD", "")
     reset_settings_cache()
     try:
         assert anon_client.get("/api/v1/admin/members").status_code == 503
