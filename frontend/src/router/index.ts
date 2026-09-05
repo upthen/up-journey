@@ -25,8 +25,6 @@ export const router = createRouter({
         { path: 'trips', name: 'admin-trips', component: () => import('@/views/admin/TripListView.vue'), meta: { auth: true } },
         { path: 'trips/new', name: 'admin-trip-new', component: () => import('@/views/admin/TripEditView.vue'), meta: { auth: true } },
         { path: 'trips/:id(\\d+)', name: 'admin-trip-edit', component: () => import('@/views/admin/TripEditView.vue'), meta: { auth: true } },
-        { path: 'members', name: 'admin-members', component: () => import('@/views/admin/MembersView.vue'), meta: { auth: true } },
-        { path: 'tags', name: 'admin-tags', component: () => import('@/views/admin/TagsView.vue'), meta: { auth: true } },
       ],
     },
     { path: '/:pathMatch(.*)*', redirect: '/' },
