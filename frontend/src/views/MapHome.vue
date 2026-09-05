@@ -7,7 +7,7 @@ import * as echarts from 'echarts'
 import { computed, onMounted, onUnmounted, ref, shallowRef } from 'vue'
 
 import { api, photoUrl } from '@/api'
-import DisplayNav from '@/components/DisplayNav.vue'
+import NavBall from '@/components/NavBall.vue'
 import type { Footprints, Spot, Stats } from '@/types'
 
 /* ---------- ADR-0001 设计 Token：地图配色 ---------- */
@@ -246,7 +246,7 @@ function hideImg(e: Event) {
 
 <template>
   <div>
-    <DisplayNav active="map" />
+    <NavBall active="map" />
 
     <!-- 第 0 幕：开场帷幕 -->
     <div class="veil" :class="{ gone: veilGone }">

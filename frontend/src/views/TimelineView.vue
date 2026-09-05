@@ -3,7 +3,7 @@
 import { computed, nextTick, onMounted, ref } from 'vue'
 
 import { api, photoUrl } from '@/api'
-import DisplayNav from '@/components/DisplayNav.vue'
+import NavBall from '@/components/NavBall.vue'
 import { dateRange, memberLabel } from '@/utils/format'
 import type { TripCard } from '@/types'
 
@@ -74,7 +74,7 @@ function hideImg(e: Event) {
 
 <template>
   <div>
-    <DisplayNav active="timeline" />
+    <NavBall active="timeline" />
     <main class="wrap page-pad">
       <section class="page-head">
         <p class="kicker">Chronicle · 时间这条线</p>

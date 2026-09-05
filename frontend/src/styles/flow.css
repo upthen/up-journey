@@ -35,26 +35,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
 
-/* ---------- 导航（浮岛，同 v3） ---------- */
-/* 条带全宽但视觉只是中央胶囊：pointer-events 收到胶囊上，
-   否则透明条带会挡住下方 z 更低的可点元素（景点面板 ✕ 等） */
-.nav { position: fixed; top: 12px; left: 0; right: 0; z-index: 60; pointer-events: none; }
-.nav-inner {
-  max-width: calc(var(--maxw) - 24px); margin: 0 auto; padding: 10px 12px 10px 20px;
-  background: rgba(255,255,255,.86); backdrop-filter: blur(14px);
-  border-radius: 999px; box-shadow: var(--shadow);
-  display: flex; align-items: center; justify-content: space-between;
-  pointer-events: auto;
-}
-.masthead { display: flex; align-items: center; gap: 10px; }
-.masthead .mark { width: 34px; height: 34px; border-radius: 11px; background: var(--coral); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 17px; }
-.masthead .zh { font-size: 17px; font-weight: 700; }
-.masthead .en { font-size: 10px; letter-spacing: .26em; color: var(--gray); text-transform: uppercase; }
-.nav-links { display: flex; align-items: center; gap: 6px; }
-.nav-links a { font-size: 14.5px; color: var(--ink-2); padding: 8px 18px; border-radius: 999px; transition: .18s; font-weight: 500; }
-.nav-links a:hover { background: var(--bg); }
-.nav-links a.active { background: var(--ink); color: #fff; }
-.nav-toggle, .nav-burger { display: none; }
+/* ---------- 导航：已收为吸边小球（见 components/NavBall.vue，样式 scoped） ---------- */
 
 /* ---------- 第一幕：全屏地图舞台 ---------- */
 .map-stage { position: fixed; inset: 0; z-index: 1; }
@@ -293,12 +274,6 @@ img { display: block; max-width: 100%; }
   .g-grid .ph:nth-child(1) { grid-column: span 2; grid-row: span 1; }
   .j-row { grid-template-columns: 1fr; }
   .j-row .ph { min-height: 190px; aspect-ratio: 16/9; }
-  .nav-toggle { display: block; position: absolute; opacity: 0; }
-  .nav-inner { position: relative; }
-  .nav-burger { display: flex; flex-direction: column; gap: 5px; cursor: pointer; padding: 10px; }
-  .nav-burger span { width: 20px; height: 2px; background: var(--ink); border-radius: 2px; }
-  .nav-links { display: none; position: absolute; top: calc(100% + 8px); right: 0; background: #fff; border-radius: var(--r-md); box-shadow: var(--shadow-lg); flex-direction: column; align-items: stretch; gap: 2px; padding: 8px; min-width: 170px; }
-  .nav-toggle:checked ~ .nav-links { display: flex; }
   .map-hint { white-space: normal; text-align: center; max-width: 86vw; }
 }
 
