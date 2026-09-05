@@ -449,3 +449,6 @@ img.cover-fallback {
 .abroad-chip .t { color: var(--gray); }
 .abroad-chip .abroad-link,
 .abroad-chip a { color: var(--coral-deep); font-weight: 600; }
+
+/* 灯箱 404 兜底文案（#23） */
+.lightbox .lb-fallback { color: #98a1ab; font-size: 14px; align-self: center; }

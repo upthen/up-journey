@@ -187,8 +187,8 @@ function hideImg(e: Event) {
                 class="ph"
                 role="button"
                 tabindex="0"
-                @click="lightbox.open(p)"
-                @keydown.enter="lightbox.open(p)"
+                @click="lightbox.open(p, g.photos)"
+                @keydown.enter="lightbox.open(p, g.photos)"
               >
                 <img :src="photoUrl(p, 'thumb')" :alt="g.attraction" loading="lazy" @error="hideImg" />
               </div>

@@ -336,7 +336,19 @@ const toolbarConfig = {
   // 图片唯一来源是 NAS 相册（相册插图），后端无上传接口——移除内置上传/网络图片与视频入口
   excludeKeys: ['group-image', 'group-video', 'insertImage', 'uploadImage', 'insertVideo', 'uploadVideo'],
 }
-const editorConfig = { placeholder: '写下游记正文…… 可用「相册插图」从 NAS 相册插图，图片不会重复上传。' }
+const editorConfig = {
+  placeholder: '写下游记正文…… 可用「相册插图」从 NAS 相册插图，图片不会重复上传。',
+  // 粘贴图片拦截（#21）：默认行为会把截图转 base64 内联进正文——发布后被展示端
+  // sanitize 剥掉（图片静默消失），且 LongText 字段急速膨胀。阻止并引导走相册插图。
+  customPaste: (_editor: unknown, event: ClipboardEvent) => {
+    const files = event.clipboardData?.files
+    if (files && Array.from(files).some((f) => f.type.startsWith('image/'))) {
+      ElMessage.warning('正文不支持直接粘贴图片：请通过工具栏「相册插图」选择')
+      return false
+    }
+    return true
+  },
+}
 
 /* 游记插图选图器（复用 AlbumBrowser，从全相册浏览） */
 const insertDialog = ref(false)
@@ -357,6 +369,17 @@ function onInsertPhotoSelected({ path }: { path: string }) {
 }
 function handleCreated(editor: unknown) {
   editorRef.value = editor
+  // 粘贴图片第一道防线（#21）：wangEditor 对纯文件粘贴不走 customPaste（files 交给未配置
+  // 的上传通道，默认转 base64 内联）。直接在可编辑容器 capture 阶段拦下。
+  const dom = (editor as { getEditableContainer?: () => HTMLElement }).getEditableContainer?.()
+  dom?.addEventListener('paste', (ev: ClipboardEvent) => {
+    const files = ev.clipboardData?.files
+    if (files && Array.from(files).some((f) => f.type.startsWith('image/'))) {
+      ev.stopImmediatePropagation()
+      ev.preventDefault()
+      ElMessage.warning('正文不支持直接粘贴图片：请通过工具栏「相册插图」选择')
+    }
+  }, true)
 }
 onUnmounted(() => {
   editorRef.value?.destroy()
@@ -456,6 +479,19 @@ async function save(status?: 'draft' | 'published') {
     return
   }
   if (status) form.status = status
+  // 外链图片会在展示端 sanitize 被剥掉（src 白名单仅本应用图片服务）——录入时提示（#23）
+  const foreignImgs = (form.content.match(/<img\b[^>]*\bsrc="(?!\/api\/v1\/photos\/)[^"]*"/gi) ?? []).length
+  if (foreignImgs > 0) {
+    try {
+      await ElMessageBox.confirm(
+        `正文包含 ${foreignImgs} 张外链图片，发布后将不会显示（图片仅支持相册插图）。请移除它们或改用「相册插图」。`,
+        '外链图片提醒',
+        { confirmButtonText: '仍要保存', cancelButtonText: '返回修改', type: 'warning' },
+      )
+    } catch {
+      return
+    }
+  }
   const payload = buildPayload()
   saving.value = true
   try {

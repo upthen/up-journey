@@ -19,7 +19,8 @@ export const http = axios.create({ baseURL: '/api/v1' })
 http.interceptors.response.use(undefined, (error) => {
   const status = error?.response?.status
   const url: string = error?.config?.url ?? ''
-  if (status === 401 && url.includes('/admin') && !url.endsWith('/login')) {
+  // /admin/session 的 401 由路由守卫软跳转处理，这里不再整页跳——避免两者竞争整页 reload（#23）
+  if (status === 401 && url.includes('/admin') && !url.endsWith('/login') && !url.endsWith('/session')) {
     if (window.location.pathname === '/admin/login') return Promise.reject(error)
     window.location.href = `/admin/login?next=${encodeURIComponent(window.location.pathname)}&expired=1`
   }

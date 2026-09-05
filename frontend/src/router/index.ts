@@ -41,7 +41,9 @@ router.beforeEach(async (to) => {
   try {
     await api.admin.session()
     return true
-  } catch {
-    return { name: 'admin-login', query: { next: to.fullPath } }
+  } catch (e: unknown) {
+    // 503 = 服务端未配置管理密码：带上标记，登录页直接显示配置指引而非盲试（#23）
+    const unconfigured = (e as { response?: { status?: number } })?.response?.status === 503
+    return { name: 'admin-login', query: { next: to.fullPath, ...(unconfigured ? { unconfigured: '1' } : {}) } }
   }
 })

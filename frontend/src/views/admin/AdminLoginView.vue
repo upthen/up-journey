@@ -17,6 +17,8 @@ const unconfigured = ref(false)
 const expired = route.query.expired === '1'
 
 onMounted(async () => {
+  // 守卫在 503（服务端未配置密码）时带标记跳来：直接显示配置指引（#23）
+  if (route.query.unconfigured === '1') unconfigured.value = true
   // 已登录访问登录页：直接回管理端（#23）
   try {
     await api.admin.session()
