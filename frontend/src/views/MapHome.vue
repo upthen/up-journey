@@ -7,8 +7,14 @@ import * as echarts from 'echarts'
 import { computed, onMounted, onUnmounted, ref, shallowRef } from 'vue'
 
 import { api, photoUrl } from '@/api'
+import MapToolbar from '@/components/MapToolbar.vue'
 import NavBall from '@/components/NavBall.vue'
 import type { Footprints, Spot, Stats } from '@/types'
+
+/** 地图初始视野（还原按钮与首次渲染共用，#31） */
+const INITIAL_CENTER: [number, number] = [110, 33]
+const INITIAL_ZOOM = 1.15
+const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /* ---------- ADR-0001 设计 Token：地图配色 ---------- */
 const T = {
@@ -106,8 +112,10 @@ function buildOption(): echarts.EChartsOption {
       map: 'china',
       roam: true,
       scaleLimit: { min: 1, max: 14 },
-      center: [110, 33],
-      zoom: 1.15,
+      center: INITIAL_CENTER,
+      zoom: INITIAL_ZOOM,
+      animationDurationUpdate: REDUCE_MOTION ? 0 : 450,
+      animationEasingUpdate: 'cubicOut',
       itemStyle: { borderColor: T.border, borderWidth: 1.2 },
       emphasis: { label: { color: T.label }, itemStyle: { areaColor: T.emphasis } },
       select: { disabled: true },
@@ -197,6 +205,11 @@ function closePanel() {
   openSpot.value = null
 }
 
+/** 一键还原初始视野（#31）：最小 merge，走 geo 更新动画，不重建系列 */
+function resetView() {
+  chart.value?.setOption({ geo: { center: INITIAL_CENTER, zoom: INITIAL_ZOOM } })
+}
+
 /** 帷幕收起 → 地图探索提示停留 7 秒后淡出。 */
 function enterMap() {
   veilGone.value = true
@@ -247,6 +260,7 @@ function hideImg(e: Event) {
 <template>
   <div>
     <NavBall active="map" />
+    <MapToolbar @reset="resetView" />
 
     <!-- 第 0 幕：开场帷幕 -->
     <div class="veil" :class="{ gone: veilGone }">
