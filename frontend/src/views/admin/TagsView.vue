@@ -34,15 +34,27 @@ async function add() {
     ElMessage.success('已添加')
     await load()
     meta.refresh()
-  } catch {
-    ElMessage.error('添加失败：标签可能已存在')
+  } catch (e: unknown) {
+    const err = e as { response?: { status?: number; data?: { detail?: string } } }
+    if (err.response?.status === 409) {
+      ElMessage.error('添加失败：标签已存在')
+    } else if (err.response?.data?.detail) {
+      ElMessage.error(`添加失败：${err.response.data.detail}`)
+    } else {
+      ElMessage.error('添加失败，请稍后重试')
+    }
   }
 }
 
 async function rename(t: Tag) {
   let value: string
   try {
-    ;({ value } = await ElMessageBox.prompt('新的标签名', '重命名', { inputValue: t.name }))
+    ;({ value } = await ElMessageBox.prompt('新的标签名（1-16 个字符）', '重命名', {
+      inputValue: t.name,
+      // 列表页输入框有 maxlength=16，弹窗此前没有——超长会被后端 422 且报错文案误导（#19）
+      inputPattern: /^.{1,16}$/,
+      inputErrorMessage: '标签名需 1-16 个字符',
+    }))
   } catch {
     return // 用户取消
   }
@@ -53,8 +65,15 @@ async function rename(t: Tag) {
     ElMessage.success('已保存')
     await load()
     meta.refresh()
-  } catch {
-    ElMessage.error('重命名失败：可能与其他标签重名')
+  } catch (e: unknown) {
+    const err = e as { response?: { status?: number; data?: { detail?: string } } }
+    if (err.response?.status === 409) {
+      ElMessage.error('重命名失败：标签名已被占用')
+    } else if (err.response?.data?.detail) {
+      ElMessage.error(`重命名失败：${err.response.data.detail}`)
+    } else {
+      ElMessage.error('重命名失败，请稍后重试')
+    }
   }
 }
 
