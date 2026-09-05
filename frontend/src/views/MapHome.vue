@@ -84,7 +84,7 @@ function buildOption(): echarts.EChartsOption {
           | { seriesType?: string; name?: string; data?: { spot?: Spot } }
           | undefined
         const d = item?.data
-        if (item?.seriesType === 'effectScatter' && d?.spot) {
+        if (d?.spot) {  // 涟漪层与透明命中层都带 spot（#17）
           const s = d.spot
           return `<b>${s.name}</b><br/>${s.year} 年 · ${s.city} · ${s.photo_count} 张照片<br/><span style="color:#98A1AB">点击查看这里的故事</span>`
         }
@@ -145,7 +145,18 @@ function buildOption(): echarts.EChartsOption {
           shadowColor: 'rgba(31,42,51,.10)',
           shadowBlur: 6,
         },
-        labelLayout: { hideOverlap: true },
+        labelLayout: { moveOverlap: 'shiftY' }, // 错开而非隐藏：被藏标签的景点会失去唯一入口（#17）
+        cursor: 'pointer',
+        data: spotData('all'),
+      },
+      {
+        // 透明大命中层：涟漪点本体很小、 ripple 动画也在动，加大点击热区（#17）
+        name: '景点命中层',
+        type: 'scatter',
+        coordinateSystem: 'geo',
+        symbolSize: 28,
+        z: 10,  // 压过路线飞线层：路线恰好汇聚在圆点上，会吃掉点击（#17）
+        itemStyle: { color: 'transparent' },
         cursor: 'pointer',
         data: spotData('all'),
       },
@@ -166,6 +177,7 @@ function applyYearFilter() {
     series: [
       { data: provinceData(currentYear.value) }, // 省份高亮随年份联动（#16）
       { data: spotData(currentYear.value) },
+      { data: spotData(currentYear.value) }, // 命中层（#17）
       { data: lineData(currentYear.value) },
     ],
   })
@@ -211,10 +223,8 @@ async function loadMap() {
     chart.value.setOption(buildOption())
     if (import.meta.env.DEV) (window as unknown as Record<string, unknown>).__ujChart = chart.value // 验收/调试用
     chart.value.on('click', (params) => {
-      if (params.seriesType === 'effectScatter') {
-        const d = params.data as { spot?: Spot }
-        if (d?.spot) openPanel(d.spot)
-      }
+      const d = params.data as { spot?: Spot } | null | undefined
+      if (d?.spot) openPanel(d.spot)  // 命中层/涟漪层任一命中都开面板（#17）
     })
     window.addEventListener('resize', resizeHandler)
   } catch {
