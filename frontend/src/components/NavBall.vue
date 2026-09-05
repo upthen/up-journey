@@ -43,6 +43,7 @@ onUnmounted(() => {
       :aria-expanded="open"
       aria-controls="nb-menu"
       aria-label="导航菜单"
+      title="导航菜单"
       @click="open = !open"
     >
       🧭
@@ -86,9 +87,11 @@ onUnmounted(() => {
   box-shadow: var(--shadow);
   transition: 0.18s;
 }
-.nb-ball:hover {
-  transform: translateY(-1px) scale(1.05);
-  box-shadow: var(--shadow-lg);
+@media (hover: hover) {
+  .nb-ball:hover {
+    transform: translateY(-1px) scale(1.05);
+    box-shadow: var(--shadow-lg);
+  }
 }
 .nb-ball:focus-visible {
   outline: 2px solid var(--coral-deep);
@@ -104,6 +107,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 4px;
   background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
   border-radius: 999px;
   box-shadow: var(--shadow);
@@ -111,7 +115,7 @@ onUnmounted(() => {
   visibility: hidden;
   transform: translateX(-8px) scale(0.96);
   transform-origin: left center;
-  transition: 0.18s;
+  transition: 0.18s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .nb-menu.open {
   opacity: 1;
