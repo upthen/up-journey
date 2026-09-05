@@ -110,8 +110,16 @@ function savedSig(data: ReturnType<typeof draftPayload>) {
   return JSON.stringify({ ...data, cities: strip(data.cities), attractions: strip(data.attractions), days: strip(data.days) })
 }
 
+// 基线签名：进入页面（含恢复草稿）时的表单内容。与基线一致=用户没编辑过，不写草稿，
+// 否则「恢复草稿 → 未编辑 → 关页」会被 beforeunload 又写回去，草稿永远复活（#12）
+let baselineSig = ''
+
 function writeDraft() {
   if (restoring.value) return
+  if (formSig() === baselineSig) {
+    clearDraft()
+    return
+  }
   try {
     localStorage.setItem(draftKey.value, JSON.stringify({ at: Date.now(), data: draftPayload() }))
   } catch {
@@ -177,6 +185,7 @@ async function maybeRestoreDraft() {
     }
   }
   clearDraft()
+  baselineSig = formSig()
   restoring.value = false
 }
 
@@ -688,7 +697,7 @@ onMounted(async () => {
     <AlbumBrowser v-model="insertDialog" mode="photo" title="从相册插图" @select="onInsertPhotoSelected" />
     <MapPointPicker v-model="pointDialog.visible" :lng="form.attractions.find((a) => a.key === pointDialog.targetKey)?.lng ?? null" :lat="form.attractions.find((a) => a.key === pointDialog.targetKey)?.lat ?? null" :hint-city="cityByCode.get(form.attractions.find((a) => a.key === pointDialog.targetKey)?.city_code || '')?.name" @picked="onPointPicked" />
 
-    <el-dialog v-model="foreignDialog" title="添加境外城市" width="420px">
+    <el-dialog v-model="foreignDialog" title="添加境外城市" width="min(420px, calc(100vw - 24px))">
       <el-form label-width="90px">
         <el-form-item label="城市名" required><el-input v-model="foreignForm.city_name" placeholder="如 京都" /></el-form-item>
         <el-form-item label="经度（可选）"><el-input-number v-model="foreignForm.lng as number" :controls="false" style="width: 100%" /></el-form-item>

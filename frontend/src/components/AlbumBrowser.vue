@@ -75,7 +75,7 @@ function chooseCurrentDir() {
   <el-dialog
     :model-value="modelValue"
     :title="title"
-    width="760px"
+    width="min(760px, calc(100vw - 24px))"
     top="6vh"
     @update:model-value="emit('update:modelValue', $event)"
   >

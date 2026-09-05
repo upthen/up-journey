@@ -98,7 +98,7 @@ watch(
   <el-dialog
     :model-value="modelValue"
     title="🗺 地图选点"
-    width="640px"
+    width="min(640px, calc(100vw - 24px))"
     top="6vh"
     @update:model-value="emit('update:modelValue', $event)"
   >
