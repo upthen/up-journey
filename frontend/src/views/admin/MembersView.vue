@@ -14,10 +14,15 @@ const dialog = ref(false)
 const editing = ref<Member | null>(null)
 const form = ref({ name: '', nickname: '', is_child: false })
 
+const error = ref(false)
+
 async function load() {
   loading.value = true
+  error.value = false
   try {
     members.value = await api.admin.members()
+  } catch {
+    error.value = true
   } finally {
     loading.value = false
   }
@@ -65,7 +70,12 @@ async function remove(m: Member) {
   } catch {
     return
   }
-  await api.admin.deleteMember(m.id)
+  try {
+    await api.admin.deleteMember(m.id)
+  } catch {
+    ElMessage.error('删除失败，请稍后重试')
+    return
+  }
   ElMessage.success('已删除')
   await load()
   meta.refresh()
@@ -76,6 +86,10 @@ onMounted(load)
 
 <template>
   <div>
+    <div v-if="error" class="ad-error-bar">
+      <span>家庭成员列表加载失败——网络或服务暂时不可用。</span>
+      <el-button size="small" @click="load">重 试</el-button>
+    </div>
     <section class="ad-panel">
       <h4>家庭成员</h4>
       <p class="hint">称呼用于展示端头像与同行列表；勾选"孩子"后，含该成员的旅行计入"带娃出行"统计。</p>

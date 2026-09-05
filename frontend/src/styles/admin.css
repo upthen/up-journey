@@ -180,3 +180,19 @@ body.admin-body { background: #F3F1EC; }
 /* 弹层内边距收窄 + 选项圆角：hover 背景不顶出弹层圆角 */
 .el-select-dropdown { padding: 4px; }
 .el-select-dropdown__item { border-radius: 6px; }
+
+/* ---------- 加载失败横幅（#14） ---------- */
+.ad-error-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 1416px;
+  margin: 0 auto 12px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: #fdeeee;
+  color: #c0392b;
+  font-size: 13.5px;
+}
+.ad-panel .hint.warn-hint { color: #c0392b; }

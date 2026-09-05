@@ -443,9 +443,15 @@ async function save(status?: 'draft' | 'published') {
   }
 }
 
+const citiesError = ref(false)
+
 onMounted(async () => {
   await meta.ensure()
-  cities.value = await api.admin.cities()
+  try {
+    cities.value = await api.admin.cities()
+  } catch {
+    citiesError.value = true
+  }
   if (tripId.value) await loadTrip(tripId.value)
   await maybeRestoreDraft()
 })
@@ -521,6 +527,7 @@ onMounted(async () => {
 
     <section class="ad-panel">
       <h4>城市与路线</h4>
+      <p v-if="citiesError" class="hint warn-hint">⚠️ 城市字典加载失败——路线/景点无法选择，请刷新页面重试。</p>
       <p class="hint">按到访顺序添加城市，地图路线与统计由此生成；顺序可调整。</p>
       <div class="trip-cities mb-3">
         <span v-for="(c, i) in form.cities" :key="c.key" class="chip">

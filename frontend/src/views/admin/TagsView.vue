@@ -11,10 +11,15 @@ const tags = ref<Tag[]>([])
 const loading = ref(false)
 const newName = ref('')
 
+const error = ref(false)
+
 async function load() {
   loading.value = true
+  error.value = false
   try {
     tags.value = await api.admin.tags()
+  } catch {
+    error.value = true
   } finally {
     loading.value = false
   }
@@ -59,7 +64,12 @@ async function remove(t: Tag) {
   } catch {
     return
   }
-  await api.admin.deleteTag(t.id)
+  try {
+    await api.admin.deleteTag(t.id)
+  } catch {
+    ElMessage.error('删除失败，请稍后重试')
+    return
+  }
   ElMessage.success('已删除')
   await load()
   meta.refresh()
@@ -70,6 +80,10 @@ onMounted(load)
 
 <template>
   <div>
+    <div v-if="error" class="ad-error-bar">
+      <span>标签列表加载失败——网络或服务暂时不可用。</span>
+      <el-button size="small" @click="load">重 试</el-button>
+    </div>
     <section class="ad-panel">
       <h4>标签管理</h4>
       <p class="hint">标签字典供录入旅行时勾选，如 亲子 / 自驾 / 海岛 / 高原。</p>

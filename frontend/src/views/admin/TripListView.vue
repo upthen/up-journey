@@ -24,8 +24,11 @@ const filters = ref<{ year: number | null; tag: string; status: string; q: strin
 const years = computed(() => [...new Set(trips.value.map((t) => t.year))].sort((a, b) => b - a))
 const draftCount = computed(() => trips.value.filter((t) => t.status === 'draft').length)
 
+const error = ref(false)
+
 async function load() {
   loading.value = true
+  error.value = false
   try {
     trips.value = await api.admin.trips({
       year: filters.value.year ?? undefined,
@@ -33,6 +36,8 @@ async function load() {
       status: filters.value.status || undefined,
       q: filters.value.q || undefined,
     })
+  } catch {
+    error.value = true
   } finally {
     loading.value = false
   }
@@ -44,7 +49,12 @@ async function remove(t: TripCard) {
   } catch {
     return
   }
-  await api.admin.deleteTrip(t.id)
+  try {
+    await api.admin.deleteTrip(t.id)
+  } catch {
+    ElMessage.error('删除失败，请稍后重试')
+    return
+  }
   ElMessage.success('已删除')
   await load()
 }
@@ -57,6 +67,10 @@ onMounted(async () => {
 
 <template>
   <div>
+    <div v-if="error" class="ad-error-bar">
+      <span>旅行列表加载失败——网络或服务暂时不可用。</span>
+      <el-button size="small" @click="load">重 试</el-button>
+    </div>
     <section class="ad-panel trip-list">
       <!-- 面板头：左标题+统计，右主操作 -->
       <div class="list-head">
@@ -145,7 +159,7 @@ onMounted(async () => {
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty :description="filters.q || filters.year || filters.tag || filters.status ? '没有匹配的旅行，试试放宽筛选条件' : '还没有旅行记录，点右上角「新建旅行」开始'" :image-size="72" />
+          <el-empty v-if="!error" :description="filters.q || filters.year || filters.tag || filters.status ? '没有匹配的旅行，试试放宽筛选条件' : '还没有旅行记录，点右上角「新建旅行」开始'" :image-size="72" />
         </template>
       </el-table>
     </section>
