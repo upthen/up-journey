@@ -34,6 +34,7 @@ const loadError = ref(false)
 const cities = ref<City[]>([])
 const drillProvince = ref<string | null>(null)
 const drillCityName = ref<string | null>(null)
+const searchCityCode = ref('')
 // 省份中心与适配缩放（打开对话框时从 china.json 一次性算好）
 const provinceMeta = ref(new Map<string, { center: number[]; zoom: number }>())
 // 标注显隐只在跨越阈值/切换层级时重建，roam 过程中不反复 setOption；
@@ -95,6 +96,15 @@ function backToNation() {
   drillProvince.value = null
   drillCityName.value = null
   applyView([...NATION_VIEW.center], NATION_VIEW.zoom)
+}
+
+/** 搜索城市快速定位：选中即下钻到该城市（境外自由文本城市无坐标，不在字典内）。 */
+function onSearchSelect(code: string) {
+  if (!code) return
+  const city = cities.value.find((c) => c.code === code)
+  if (!city) return
+  drillToCity(city)
+  searchCityCode.value = ''
 }
 
 function pickAt(offsetX: number, offsetY: number) {
@@ -327,6 +337,17 @@ watch(
       <p class="tip">
         点击省份下钻，点击城市居中，在省域内点击落点{{ hintCity ? `（建议定位：${hintCity}）` : '' }}；不选则跟随城市中心。
       </p>
+      <el-select
+        v-model="searchCityCode"
+        class="city-search"
+        filterable
+        clearable
+        placeholder="🔍 搜索城市快速定位"
+        :disabled="!cities.length"
+        @change="onSearchSelect"
+      >
+        <el-option v-for="c in cities" :key="c.code" :label="`${c.name}（${c.province_name}）`" :value="c.code" />
+      </el-select>
       <p v-if="drillProvince" class="crumbs">
         📍 当前：{{ drillProvince }}<template v-if="drillCityName"> · {{ drillCityName }}</template>
         <el-button link size="small" @click="backToNation">返回全国</el-button>
@@ -346,6 +367,10 @@ watch(
 </template>
 
 <style scoped>
+.city-search {
+  width: 100%;
+  margin-bottom: 8px;
+}
 .crumbs {
   margin: -6px 0 8px;
   font-size: 12px;
