@@ -151,6 +151,14 @@ body.admin-body { background: #F3F1EC; }
 .album-browser .entry.pic { position: relative; aspect-ratio: 1; }
 .album-browser .entry.pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .album-browser .entry.pic:hover { outline: 3px solid var(--coral); }
+/* 预览大图按钮：悬停浮现，点击不打断选图语义 */
+.album-browser .entry.pic .pic-preview {
+  position: absolute; right: 4px; bottom: 4px; z-index: 1;
+  width: 26px; height: 26px; border: none; border-radius: 8px;
+  background: rgba(16, 22, 28, .62); color: #fff; font-size: 14px;
+  cursor: zoom-in; opacity: 0; transition: opacity .15s ease;
+}
+.album-browser .entry.pic:hover .pic-preview { opacity: 1; }
 
 /* 地图选点 */
 .point-picker .map { height: 380px; border-radius: var(--r-sm); overflow: hidden; }

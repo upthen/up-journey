@@ -117,7 +117,8 @@ def get_photo(size: str, rel: str, settings: Settings | None = None) -> Path:
         raise PhotoNotFound("不支持的图片格式")
     stat = src.stat()
 
-    key_src = f"{rel}\0{stat.st_mtime_ns}\0{size}".encode("utf-8")
+    # 键纳入尺寸数值：调整 FULL_SIZE/THUMB_SIZE 后旧缓存自然失效重建
+    key_src = f"{rel}\0{stat.st_mtime_ns}\0{size}\0{limit}".encode("utf-8")
     key = hashlib.sha1(key_src).hexdigest()
     cached = _cache_file(cache_root(settings), key)
     if cached.exists():
