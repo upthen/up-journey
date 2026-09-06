@@ -114,8 +114,6 @@ function buildOption(): echarts.EChartsOption {
       scaleLimit: { min: 1, max: 14 },
       center: INITIAL_CENTER,
       zoom: INITIAL_ZOOM,
-      animationDurationUpdate: REDUCE_MOTION ? 0 : 450,
-      animationEasingUpdate: 'cubicOut',
       itemStyle: { borderColor: T.border, borderWidth: 1.2 },
       emphasis: { label: { color: T.label }, itemStyle: { areaColor: T.emphasis } },
       select: { disabled: true },
@@ -205,9 +203,32 @@ function closePanel() {
   openSpot.value = null
 }
 
-/** 一键还原初始视野（#31）：最小 merge，走 geo 更新动画，不重建系列 */
+/** 一键还原初始视野（#31）：ECharts 对 geo center/zoom 的 setOption 变更不走动画（根级动画参数也不生效），
+ *  用 rAF 按 cubicOut 插值手写 450ms 过渡；reduced-motion 直接落位。 */
+const RESTORE_MS = 450
+let restoreRaf = 0
 function resetView() {
-  chart.value?.setOption({ geo: { center: INITIAL_CENTER, zoom: INITIAL_ZOOM } })
+  const inst = chart.value
+  if (!inst) return
+  cancelAnimationFrame(restoreRaf)
+  const finish = () => inst.setOption({ geo: { center: INITIAL_CENTER, zoom: INITIAL_ZOOM } })
+  if (REDUCE_MOTION) return finish()
+  const start = (inst.getOption() as { geo?: { center?: number[]; zoom?: number }[] }).geo?.[0] ?? {}
+  const c0 = (start.center ?? INITIAL_CENTER) as [number, number]
+  const z0 = start.zoom ?? INITIAL_ZOOM
+  const t0 = performance.now()
+  const step = (now: number) => {
+    const k = Math.min(1, (now - t0) / RESTORE_MS)
+    const e = 1 - Math.pow(1 - k, 3) // cubicOut
+    inst.setOption({
+      geo: {
+        center: [c0[0] + (INITIAL_CENTER[0] - c0[0]) * e, c0[1] + (INITIAL_CENTER[1] - c0[1]) * e],
+        zoom: z0 + (INITIAL_ZOOM - z0) * e,
+      },
+    })
+    if (k < 1) restoreRaf = requestAnimationFrame(step)
+  }
+  restoreRaf = requestAnimationFrame(step)
 }
 
 /** 帷幕收起 → 地图探索提示停留 7 秒后淡出。 */
@@ -249,6 +270,7 @@ async function loadMap() {
 onMounted(loadMap)
 
 onUnmounted(() => {
+  cancelAnimationFrame(restoreRaf)
   window.removeEventListener('resize', resizeHandler)
   chart.value?.dispose()
 })

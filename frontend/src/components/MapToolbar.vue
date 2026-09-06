@@ -33,7 +33,7 @@ const emit = defineEmits<{ (e: 'reset'): void }>()
   width: 44px;
   height: 44px;
   border: none;
-  border-radius: 12px;
+  border-radius: 999px;
   background: transparent;
   font-size: 18px;
   display: flex;
@@ -42,8 +42,10 @@ const emit = defineEmits<{ (e: 'reset'): void }>()
   cursor: pointer;
   transition: 0.18s;
 }
-.maptb-btn:hover {
-  background: var(--bg);
+@media (hover: hover) {
+  .maptb-btn:hover {
+    background: var(--bg);
+  }
 }
 .maptb-btn:active {
   transform: scale(0.94);
