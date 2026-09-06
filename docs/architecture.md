@@ -49,8 +49,8 @@ docs/       架构 / DDL / 部署文档、prototype 高保真原型
 
 1. 请求 `GET /photos/thumb?path=2024云南/大理洱海/IMG_1234.HEIC`。
 2. 校验解析后的绝对路径必须落在 `/photos` 挂载根内，否则 403。
-3. 缓存键 = 原始相对路径 + 文件 mtime + size 档位，命中 `/cache` 直接返回。
-4. 未命中则 Pillow 打开原图：EXIF 转正 → HEIC 转 JPEG → resize（thumb 400px / full 1600px 长边）→ 写缓存 → 返回。
+3. 缓存键 = 原始相对路径 + 文件 mtime + size 档位 + 尺寸数值（`THUMB_SIZE`/`FULL_SIZE` 变更后旧缓存自然失效重建），命中 `/cache` 直接返回。
+4. 未命中则 Pillow 打开原图：EXIF 转正 → HEIC 转 JPEG → resize（thumb 400px / full 2600px 长边，均可配）→ 写缓存 → 返回。
 5. 原图永远只读；相册内容增删实时生效（无同步任务，请求时扫描）。
 
 ## 安全边界

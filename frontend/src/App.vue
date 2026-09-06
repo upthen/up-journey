@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 
-import { lightbox, WHEEL_STEP } from '@/composables/lightbox'
+import { lightbox, MIN_SCALE, WHEEL_STEP } from '@/composables/lightbox'
 
 function onKey(e: KeyboardEvent) {
   if (!lightbox.show) return
@@ -23,7 +23,7 @@ function onDbl(e: MouseEvent) {
 let lastX = 0
 let lastY = 0
 function onPointerDown(e: PointerEvent) {
-  if (e.pointerType !== 'mouse' || lightbox.scale <= 1 || !e.isPrimary) return
+  if (e.pointerType !== 'mouse' || lightbox.scale <= MIN_SCALE || !e.isPrimary) return
   lightbox.dragging = true
   lastX = e.clientX
   lastY = e.clientY
@@ -61,7 +61,7 @@ function onTouchStart(e: TouchEvent) {
   suppressClick = false // 新手势开始：此前滑动遗留的 click 豁免作废
   if (e.touches.length === 1) {
     const t = e.touches[0]
-    touchMode = lightbox.scale > 1 ? 'pan' : 'swipe'
+    touchMode = lightbox.scale > MIN_SCALE ? 'pan' : 'swipe'
     startX = lastTouchX = t.clientX
     startY = lastTouchY = t.clientY
     movedFar = false
@@ -114,10 +114,15 @@ function onTouchEnd(e: TouchEvent) {
         lastTapY = lastTouchY
       }
     } else if (touchMode === 'swipe' && Math.abs(dx) > SWIPE_PX && Math.abs(dx) > Math.abs(dy) * 1.2) {
-      // 横滑超阈值翻页，不足则回弹（什么都不做）；放大态只平移不翻页
+      // 横滑超阈值翻页；放大态只平移不翻页
       suppressClick = true // 吃掉滑动后合成的 click，避免误关灯箱
       lightbox.step(dx < 0 ? 1 : -1)
       lastTapAt = 0 // 翻页后重置双击计时，避免连滑被误判
+    } else if (touchMode === 'swipe') {
+      // 轻拨/纵向滑动：轻推一下弹回，明示"不翻页"
+      const nx = Math.max(-14, Math.min(14, dx * 0.12))
+      const ny = Math.max(-14, Math.min(14, dy * 0.12))
+      if (nx || ny) lightbox.nudge(nx, ny)
     }
   }
   if (e.touches.length === 0) touchMode = null
@@ -162,7 +167,7 @@ function onOverlayClick() {
         :src="lightbox.src"
         alt="照片大图"
         draggable="false"
-        :class="{ 'is-zoomed': lightbox.scale > 1, 'is-dragging': lightbox.dragging }"
+        :class="{ 'is-zoomed': lightbox.scale > MIN_SCALE, 'is-dragging': lightbox.dragging }"
         :style="{
           transform: `translate(${lightbox.x}px, ${lightbox.y}px) rotate(${lightbox.angle}deg) scale(${lightbox.scale})`,
           transition: lightbox.dragging ? 'none' : 'transform .18s ease',
@@ -187,8 +192,8 @@ function onOverlayClick() {
     <div class="lb-toolbar" @click.stop>
       <button
         aria-label="缩小"
-        :disabled="lightbox.errored || lightbox.scale <= 1"
-        @click="lightbox.zoomBy(1 / 1.5)"
+        :disabled="lightbox.errored || lightbox.scale <= MIN_SCALE"
+        @click="lightbox.zoomAt(1 / 1.5)"
       >−</button>
       <span v-if="lightbox.list.length > 1" class="lb-count">
         {{ lightbox.index + 1 }} / {{ lightbox.list.length }}
@@ -196,12 +201,12 @@ function onOverlayClick() {
       <button
         aria-label="放大"
         :disabled="lightbox.errored"
-        @click="lightbox.zoomBy(1.5)"
+        @click="lightbox.zoomAt(1.5)"
       >＋</button>
       <button
         class="lb-fit"
         aria-label="适合窗口"
-        :disabled="lightbox.errored || lightbox.scale <= 1"
+        :disabled="lightbox.errored || lightbox.scale <= MIN_SCALE"
         @click="lightbox.fitToWindow()"
       >⤢</button>
       <button aria-label="旋转 90°" :disabled="lightbox.errored" @click="lightbox.rotate()">⟳</button>

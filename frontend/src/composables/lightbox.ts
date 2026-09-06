@@ -66,9 +66,6 @@ export const lightbox = reactive({
     lightbox.scale = to
     lightbox._clampPan()
   },
-  zoomBy(factor: number) {
-    lightbox.zoomAt(factor)
-  },
   /** 双击/双击点按：适合窗口 ↔ 2x（以点击处为锚）。 */
   toggleZoom(cx?: number, cy?: number) {
     if (lightbox.scale > MIN_SCALE) lightbox.fitToWindow()
@@ -84,12 +81,20 @@ export const lightbox = reactive({
     lightbox.angle = (lightbox.angle + 90) % 360
     lightbox._clampPan()
   },
+  /** 拒绝的滑动（未过阈值/纵向为主）：轻推一下弹回，给出"不翻页"的视觉反馈。 */
+  nudge(dx: number, dy: number) {
+    if (lightbox.scale > MIN_SCALE) return
+    lightbox.x += dx
+    lightbox.y += dy
+    setTimeout(() => {
+      lightbox.x -= dx
+      lightbox.y -= dy
+    }, 160)
+  },
 
   // —— 内部 ——
   _resetView() {
-    lightbox.scale = 1
-    lightbox.x = 0
-    lightbox.y = 0
+    lightbox.fitToWindow()
     lightbox.angle = 0
   },
   /** 适合窗口下的图片显示尺寸（旋转 90/270 时宽高互换）。 */
