@@ -414,6 +414,12 @@ img { display: block; max-width: 100%; }
   color: rgba(255,255,255,.75); font-size: 12.5px; letter-spacing: .04em;
 }
 
+/* 移动端：隐藏侧箭头（滑动替代），工具栏收窄并避开安全区 */
+@media (max-width: 768px) {
+  .lightbox .lb-arrow { display: none; }
+  .lightbox .lb-toolbar { bottom: calc(14px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) scale(.92); }
+}
+
 /* 空态 / 载入 */
 .empty {
   text-align: center; padding: 64px 24px; color: var(--gray);

@@ -19,11 +19,11 @@ function onDbl(e: MouseEvent) {
   lightbox.toggleZoom(e.clientX, e.clientY)
 }
 
-// 拖拽平移：仅放大后生效（1x 时交给翻页/关闭语义）
+// 拖拽平移（鼠标）：仅放大后生效（1x 时交给翻页/关闭语义）；触摸由 touch 手势接管
 let lastX = 0
 let lastY = 0
 function onPointerDown(e: PointerEvent) {
-  if (lightbox.scale <= 1 || !e.isPrimary) return
+  if (e.pointerType !== 'mouse' || lightbox.scale <= 1 || !e.isPrimary) return
   lightbox.dragging = true
   lastX = e.clientX
   lastY = e.clientY
@@ -41,6 +41,97 @@ function onPointerUp() {
 function setImgEl(el: unknown) {
   lightbox.el = (el as HTMLImageElement) ?? null
 }
+
+// —— 触摸手势：1x 横滑翻页（不足回弹）/ 放大后单指平移 / 双指捏合缩放 / 双击点按 ——
+const SWIPE_PX = 48
+const TAP_MS = 320
+let touchMode: null | 'swipe' | 'pan' | 'pinch' = null
+let startX = 0
+let startY = 0
+let movedFar = false
+let lastTouchX = 0
+let lastTouchY = 0
+let lastDist = 0
+let lastTapAt = 0
+let lastTapX = 0
+let lastTapY = 0
+let suppressClick = false
+
+function onTouchStart(e: TouchEvent) {
+  if (e.touches.length === 1) {
+    const t = e.touches[0]
+    touchMode = lightbox.scale > 1 ? 'pan' : 'swipe'
+    startX = lastTouchX = t.clientX
+    startY = lastTouchY = t.clientY
+    movedFar = false
+  } else if (e.touches.length >= 2) {
+    touchMode = 'pinch'
+    const [a, b] = [e.touches[0], e.touches[1]]
+    lastDist = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY)
+    lastTouchX = (a.clientX + b.clientX) / 2
+    lastTouchY = (a.clientY + b.clientY) / 2
+  }
+}
+function onTouchMove(e: TouchEvent) {
+  if (!touchMode) return
+  e.preventDefault()
+  if (touchMode === 'pan' && e.touches.length === 1) {
+    const t = e.touches[0]
+    lightbox.panBy(t.clientX - lastTouchX, t.clientY - lastTouchY)
+    lastTouchX = t.clientX
+    lastTouchY = t.clientY
+  } else if (touchMode === 'pinch' && e.touches.length >= 2) {
+    const [a, b] = [e.touches[0], e.touches[1]]
+    const dist = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY)
+    const cx = (a.clientX + b.clientX) / 2
+    const cy = (a.clientY + b.clientY) / 2
+    if (lastDist > 0) lightbox.zoomAt(dist / lastDist, cx, cy)
+    lightbox.panBy(cx - lastTouchX, cy - lastTouchY)
+    lastDist = dist
+    lastTouchX = cx
+    lastTouchY = cy
+  } else if (touchMode === 'swipe') {
+    const t = e.touches[0]
+    lastTouchX = t.clientX
+    lastTouchY = t.clientY
+    if (Math.hypot(t.clientX - startX, t.clientY - startY) > 12) movedFar = true
+  }
+}
+function onTouchEnd(e: TouchEvent) {
+  if (touchMode === 'swipe' && !movedFar && lightbox.scale <= 1 && e.touches.length === 0) {
+    // 双击点按：适合窗口 ↔ 2x
+    const now = Date.now()
+    if (now - lastTapAt < TAP_MS && Math.hypot(lastTouchX - lastTapX, lastTouchY - lastTapY) < 28) {
+      lightbox.toggleZoom(lastTouchX, lastTouchY)
+      lastTapAt = 0
+    } else {
+      lastTapAt = now
+      lastTapX = lastTouchX
+      lastTapY = lastTouchY
+    }
+    // 横滑超阈值翻页，不足则回弹（什么都不做）
+    const dx = lastTouchX - startX
+    const dy = lastTouchY - startY
+    if (Math.abs(dx) > SWIPE_PX && Math.abs(dx) > Math.abs(dy) * 1.2) {
+      suppressClick = true // 吃掉滑动后合成的 click，避免误关灯箱
+      lightbox.step(dx < 0 ? 1 : -1)
+      lastTapAt = 0 // 翻页后重置双击计时，避免连滑被误判
+    }
+  }
+  if (e.touches.length === 0) touchMode = null
+  else if (e.touches.length === 1 && touchMode === 'pinch') {
+    touchMode = 'pan'
+    lastTouchX = e.touches[0].clientX
+    lastTouchY = e.touches[0].clientY
+  }
+}
+function onOverlayClick() {
+  if (suppressClick) {
+    suppressClick = false
+    return
+  }
+  lightbox.close()
+}
 </script>
 
 <template>
@@ -49,8 +140,12 @@ function setImgEl(el: unknown) {
     v-if="lightbox.show"
     class="lightbox"
     :class="{ 'is-errored': lightbox.errored }"
-    @click="lightbox.close()"
+    @click="onOverlayClick"
     @wheel.prevent="onWheel"
+    @touchstart="onTouchStart"
+    @touchmove.prevent="onTouchMove"
+    @touchend="onTouchEnd"
+    @touchcancel="onTouchEnd"
   >
     <button
       v-if="lightbox.list.length > 1"
