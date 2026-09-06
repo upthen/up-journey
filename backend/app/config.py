@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     cache_dir: str = "./data/cache"
 
     thumb_size: int = 400
-    full_size: int = 1600
+    full_size: int = 2600  # 高清档：灯箱支持放大后仍清晰
     image_quality: int = 85
 
     # 管理端密码：留空 = 未配置，管理 API 一律 503（安全默认：公网忘配密码的后果是

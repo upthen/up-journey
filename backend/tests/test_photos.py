@@ -1,8 +1,10 @@
 """图片管线：EXIF 转正、HEIC 转码、两档缩放、缓存、目录穿越拦截、原图只读。"""
 
 import hashlib
+import os
 
 from PIL import Image
+from app.config import get_settings
 from tests.conftest import make_heic, make_jpeg
 
 
@@ -58,7 +60,7 @@ def test_photo_unsupported_extension_404(client, photos_root):
 
 
 def test_thumb_and_full_sizes(client, photos_root):
-    make_jpeg(photos_root / "album" / "big.jpg", size=(2400, 1600))
+    make_jpeg(photos_root / "album" / "big.jpg", size=(4000, 2800))
 
     thumb = client.get("/api/v1/photos/thumb", params={"path": "album/big.jpg"})
     assert thumb.status_code == 200
@@ -68,7 +70,7 @@ def test_thumb_and_full_sizes(client, photos_root):
 
     full = client.get("/api/v1/photos/full", params={"path": "album/big.jpg"})
     w, h = _img_size(full.content)
-    assert max(w, h) == 1600  # 长边 1600
+    assert max(w, h) == 2600  # 长边 2600（灯箱放大仍清晰）
 
 
 def test_small_image_not_upscaled(client, photos_root):
@@ -134,6 +136,23 @@ def test_cache_invalidated_when_album_file_changes(client, photos_root):
     make_jpeg(src, size=(1200, 800), color=(0, 0, 255))  # mtime 变化
     second = client.get("/api/v1/photos/thumb", params={"path": "live.jpg"})
     assert second.content != first.content
+
+
+def test_cache_invalidated_when_size_config_changes(client, photos_root):
+    """缓存键含尺寸数值：full_size 配置调整后旧缓存不命中，按新值重建。"""
+    src = photos_root / "resize.jpg"
+    make_jpeg(src, size=(4000, 2800))
+    first = client.get("/api/v1/photos/full", params={"path": "resize.jpg"})
+    assert _img_size(first.content)[0] == 2600
+
+    os.environ["FULL_SIZE"] = "1600"
+    get_settings.cache_clear()
+    try:
+        second = client.get("/api/v1/photos/full", params={"path": "resize.jpg"})
+        assert _img_size(second.content)[0] == 1600  # 键未随尺寸变化的话这里会命中旧缓存
+    finally:
+        os.environ.pop("FULL_SIZE")
+        get_settings.cache_clear()
 
 
 def test_unicode_path_roundtrip(client, photos_root):
