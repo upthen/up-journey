@@ -58,6 +58,7 @@ let lastTapY = 0
 let suppressClick = false
 
 function onTouchStart(e: TouchEvent) {
+  suppressClick = false // 新手势开始：此前滑动遗留的 click 豁免作废
   if (e.touches.length === 1) {
     const t = e.touches[0]
     touchMode = lightbox.scale > 1 ? 'pan' : 'swipe'
@@ -98,21 +99,22 @@ function onTouchMove(e: TouchEvent) {
   }
 }
 function onTouchEnd(e: TouchEvent) {
-  if (touchMode === 'swipe' && !movedFar && lightbox.scale <= 1 && e.touches.length === 0) {
-    // 双击点按：适合窗口 ↔ 2x
-    const now = Date.now()
-    if (now - lastTapAt < TAP_MS && Math.hypot(lastTouchX - lastTapX, lastTouchY - lastTapY) < 28) {
-      lightbox.toggleZoom(lastTouchX, lastTouchY)
-      lastTapAt = 0
-    } else {
-      lastTapAt = now
-      lastTapX = lastTouchX
-      lastTapY = lastTouchY
-    }
-    // 横滑超阈值翻页，不足则回弹（什么都不做）
+  if ((touchMode === 'swipe' || touchMode === 'pan') && e.touches.length === 0) {
     const dx = lastTouchX - startX
     const dy = lastTouchY - startY
-    if (Math.abs(dx) > SWIPE_PX && Math.abs(dx) > Math.abs(dy) * 1.2) {
+    if (!movedFar) {
+      // 点按（≤12px）：双击点按在适合窗口 ↔ 2x 间切换（放大态下点按也归位）
+      const now = Date.now()
+      if (now - lastTapAt < TAP_MS && Math.hypot(lastTouchX - lastTapX, lastTouchY - lastTapY) < 28) {
+        lightbox.toggleZoom(lastTouchX, lastTouchY)
+        lastTapAt = 0
+      } else {
+        lastTapAt = now
+        lastTapX = lastTouchX
+        lastTapY = lastTouchY
+      }
+    } else if (touchMode === 'swipe' && Math.abs(dx) > SWIPE_PX && Math.abs(dx) > Math.abs(dy) * 1.2) {
+      // 横滑超阈值翻页，不足则回弹（什么都不做）；放大态只平移不翻页
       suppressClick = true // 吃掉滑动后合成的 click，避免误关灯箱
       lightbox.step(dx < 0 ? 1 : -1)
       lastTapAt = 0 // 翻页后重置双击计时，避免连滑被误判

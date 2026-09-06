@@ -8,7 +8,6 @@ const MIN_SCALE = 1
 const MAX_SCALE = 4
 const WHEEL_STEP = 1.2
 const DBLCLICK_SCALE = 2
-const TOOLBAR_STEP = 1.5
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v))
 
@@ -126,4 +125,4 @@ export const lightbox = reactive({
   },
 })
 
-export { MIN_SCALE, MAX_SCALE, WHEEL_STEP, TOOLBAR_STEP }
+export { MIN_SCALE, MAX_SCALE, WHEEL_STEP }
