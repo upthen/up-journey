@@ -355,19 +355,64 @@ img { display: block; max-width: 100%; }
    以下为 v4 原型之外的实装补充（lightbox / 空态 / 载入 / 图片占位）
    ============================================================ */
 
-/* 大图灯箱（点开看 ~1600px 高清档） */
+/* 大图灯箱（点开看高清档；查看器：缩放/平移/旋转/翻页，零依赖手写） */
 .lightbox {
   position: fixed; inset: 0; z-index: 120;
   background: rgba(20, 26, 32, .92);
   display: flex; align-items: center; justify-content: center;
   cursor: zoom-out; animation: lbIn .25s ease;
+  touch-action: none; /* 手势全部拦在灯箱层，不触发背景 */
+  user-select: none; -webkit-user-select: none;
 }
 @keyframes lbIn { from { opacity: 0; } to { opacity: 1; } }
 .lightbox img {
   max-width: 94vw; max-height: 92vh; border-radius: 8px;
   box-shadow: 0 24px 80px rgba(0,0,0,.5);
+  will-change: transform;
+  cursor: default;
 }
-.lightbox .cap { position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,.75); font-size: 13px; }
+.lightbox img.is-zoomed { cursor: grab; }
+.lightbox img.is-dragging { cursor: grabbing; }
+
+/* 换图入场：淡入 + 轻微位移（pageKey 变更重挂载触发） */
+.lightbox .lb-stage { display: flex; align-items: center; justify-content: center; animation: lbSwap .22s ease; }
+@keyframes lbSwap { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+
+/* 两侧翻页箭头（桌面；单张无组时隐藏） */
+.lightbox .lb-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 46px; height: 46px; border-radius: 50%;
+  border: none; cursor: pointer; z-index: 2;
+  background: rgba(255,255,255,.10); color: rgba(255,255,255,.88);
+  font-size: 26px; line-height: 44px; text-align: center; padding: 0;
+  transition: background .15s ease, opacity .15s ease;
+}
+.lightbox .lb-arrow:hover { background: var(--coral, #E8683A); }
+.lightbox .lb-prev { left: 18px; }
+.lightbox .lb-next { right: 18px; }
+
+/* 底部胶囊工具栏：− / 计数 / ＋ / 适合窗口 / 旋转 / 关闭 */
+.lightbox .lb-toolbar {
+  position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 2px;
+  background: rgba(16, 22, 28, .78);
+  border-radius: 999px; padding: 6px 10px;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  z-index: 2;
+}
+.lightbox .lb-toolbar button {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: none; background: transparent; cursor: pointer;
+  color: rgba(255,255,255,.9); font-size: 17px; line-height: 1;
+  transition: background .15s ease;
+}
+.lightbox .lb-toolbar button:hover:not(:disabled) { background: rgba(255,255,255,.14); }
+.lightbox .lb-toolbar button:disabled { opacity: .35; cursor: default; }
+.lightbox .lb-toolbar .lb-close:hover:not(:disabled) { background: var(--coral, #E8683A); }
+.lightbox .lb-count {
+  min-width: 64px; text-align: center;
+  color: rgba(255,255,255,.75); font-size: 12.5px; letter-spacing: .04em;
+}
 
 /* 空态 / 载入 */
 .empty {
@@ -451,4 +496,5 @@ img.cover-fallback {
 .abroad-chip a { color: var(--coral-deep); font-weight: 600; }
 
 /* 灯箱 404 兜底文案（#23） */
-.lightbox .lb-fallback { color: #98a1ab; font-size: 14px; align-self: center; }
+.lightbox .lb-fallback { color: #98a1ab; font-size: 14px; align-self: center; cursor: default; }
+.lightbox.is-errored { cursor: default; }
