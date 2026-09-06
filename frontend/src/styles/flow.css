@@ -357,7 +357,7 @@ img { display: block; max-width: 100%; }
 
 /* 大图灯箱（点开看高清档；查看器：缩放/平移/旋转/翻页，零依赖手写） */
 .lightbox {
-  position: fixed; inset: 0; z-index: 120;
+  position: fixed; inset: 0; z-index: 3000; /* 高于 Element Plus 弹窗（~2000），管理端弹窗内也能打开 */
   background: rgba(20, 26, 32, .92);
   display: flex; align-items: center; justify-content: center;
   cursor: zoom-out; animation: lbIn .25s ease;

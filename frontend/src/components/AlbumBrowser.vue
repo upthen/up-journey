@@ -5,6 +5,7 @@ import { ElMessage } from 'element-plus'
 import { computed, ref, watch } from 'vue'
 
 import { api, photoUrl } from '@/api'
+import { lightbox } from '@/composables/lightbox'
 import type { Album } from '@/types'
 
 const props = withDefaults(
@@ -54,6 +55,10 @@ function pickPhoto(p: string) {
   if (props.mode !== 'photo') return
   emit('select', { path: p, name: p.split('/').pop() || p })
   emit('update:modelValue', false)
+}
+/** 预览大图（全局灯箱），不改变点击缩略图选图的语义；组 = 当前目录全部照片。 */
+function previewPhoto(p: string) {
+  lightbox.open(p, album.value?.photos ?? [])
 }
 function pickDir(p: string) {
   if (props.mode === 'dir') {
@@ -113,6 +118,12 @@ function chooseCurrentDir() {
           @click="pickPhoto(p)"
         >
           <img :src="photoUrl(p, 'thumb')" loading="lazy" :alt="p" />
+          <button
+            v-if="mode === 'photo'"
+            class="pic-preview"
+            title="预览大图"
+            @click.stop="previewPhoto(p)"
+          >⤢</button>
         </div>
       </div>
     </div>
