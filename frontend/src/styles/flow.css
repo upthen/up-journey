@@ -146,15 +146,6 @@ img { display: block; max-width: 100%; }
 
 /* ---------- 第三幕：游记页（复用 v3 结构，加返回地图） ---------- */
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
-.back-map {
-  /* 78px = 固定导航（top 12 + 高约 54 + 间距）之下，粘住时不被导航胶囊盖住 */
-  position: sticky; top: 78px; z-index: 30; display: inline-flex; align-items: center; gap: 8px;
-  margin: 16px 0 0; font-size: 13.5px; font-weight: 600; color: var(--ink);
-  background: rgba(255,255,255,.86); backdrop-filter: blur(12px);
-  padding: 9px 18px; border-radius: 999px; box-shadow: var(--shadow); transition: .18s;
-}
-.back-map:hover { color: var(--coral-deep); }
-
 .trip-hero { position: relative; border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-lg); margin-top: 14px; }
 .trip-hero .ph { aspect-ratio: 21/9; min-height: 380px; position: relative; }
 .trip-hero .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -203,7 +194,7 @@ img { display: block; max-width: 100%; }
 .g-grid .ph:hover { transform: scale(1.015); }
 .g-grid .ph:nth-child(1) { grid-column: span 2; grid-row: span 2; border-radius: var(--r-md); }
 
-.pn { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 40px 0 56px; }
+.pn { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 40px 0 80px; }
 .pn a { background: var(--card); border-radius: var(--r-md); box-shadow: var(--shadow); padding: 20px 24px; transition: .2s; }
 .pn a:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
 .pn a.next { text-align: right; }
@@ -211,7 +202,7 @@ img { display: block; max-width: 100%; }
 .pn .t { font-size: 17px; font-weight: 700; margin-top: 6px; }
 
 /* ---------- 名录页（列表逃生口） ---------- */
-.page-pad { padding: 96px 0 60px; }
+.page-pad { padding: 96px; }
 .page-head .kicker { font-size: 12px; letter-spacing: .22em; color: var(--coral); text-transform: uppercase; font-weight: 700; margin-bottom: 12px; }
 .page-head h1 { font-size: clamp(30px, 5vw, 44px); font-weight: 700; letter-spacing: -.015em; }
 .page-head .sub { margin-top: 10px; color: var(--ink-2); font-size: 15px; }

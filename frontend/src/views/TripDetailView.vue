@@ -149,7 +149,6 @@ function hideImg(e: Event) {
   <div>
     <NavBall active="list" />
     <main v-if="trip" class="wrap page-pad">
-      <router-link class="back-map" to="/">← 回到地图</router-link>
 
       <section class="trip-hero">
         <div class="ph">

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 
+import BackHome from '@/components/BackHome.vue'
 import { lightbox } from '@/composables/lightbox'
 
 function onKey(e: KeyboardEvent) {
@@ -15,6 +16,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
 
 <template>
   <router-view />
+  <BackHome />
   <div v-if="lightbox.show" class="lightbox" @click="lightbox.close()">
     <img v-if="!lightbox.errored" :src="lightbox.src" alt="照片大图" @error="lightbox.errored = true" />
     <p v-else class="lb-fallback">照片加载失败——文件可能已被移出相册</p>
