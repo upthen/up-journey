@@ -145,7 +145,7 @@ img { display: block; max-width: 100%; }
 .panel .cta:hover { background: var(--coral-deep); }
 
 /* ---------- 第三幕：游记页（复用 v3 结构，加返回地图） ---------- */
-.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
+.wrap { max-width: calc(var(--maxw) + 2 * var(--pad)); margin: 0 auto; padding: 0 var(--pad); }
 .trip-hero { position: relative; border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-lg); margin-top: 14px; }
 .trip-hero .ph { aspect-ratio: 21/9; min-height: 380px; position: relative; }
 .trip-hero .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -202,7 +202,8 @@ img { display: block; max-width: 100%; }
 .pn .t { font-size: 17px; font-weight: 700; margin-top: 6px; }
 
 /* ---------- 名录页 ---------- */
-.page-pad { padding: 72px 0 96px; }
+/* 只补上下：这里不能写 padding 简写，整段声明会覆盖 .wrap 的左右 --pad（#35） */
+.page-pad { padding-top: 72px; padding-bottom: 96px; }
 .page-head .kicker { font-size: 12px; letter-spacing: .22em; color: var(--coral); text-transform: uppercase; font-weight: 700; margin-bottom: 12px; }
 .page-head h1 { font-size: clamp(30px, 5vw, 44px); font-weight: 700; letter-spacing: -.015em; }
 .page-head .sub { margin-top: 10px; color: var(--ink-2); font-size: 15px; }
@@ -227,7 +228,7 @@ img { display: block; max-width: 100%; }
 /* ---------- 响应式 ---------- */
 @media (max-width: 900px) {
   .stats-flag { display: none; }
-  .trip-layout { grid-template-columns: 1fr; }
+  .trip-layout { grid-template-columns: minmax(0, 1fr); }
   .side { position: static; }
   .g-grid { grid-template-columns: repeat(2,1fr); }
   .g-grid .ph:nth-child(1) { grid-column: span 2; grid-row: span 1; }
