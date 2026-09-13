@@ -136,3 +136,14 @@
 - [ ] 🎯 还原视野功能与改动前完全一致（位置、动画、状态零变化）。
 - [ ] TimelineView / JournalListView / TripDetailView / 管理端均不出现新按钮；`flow.css` 零改动，全局搜索无 `maptb-` 泄漏。
 - [ ] 构建（vue-tsc + vite build）通过。
+
+---
+
+## 修订（2026-09-13 · 用户 grilling 确认）
+
+原 §4 的跳转目标 `/admin/trips/new` 语义错误——「直达管理端」不等于「直达新建表单」，目标页应由用户在管理端内自主选择。经确认修订：
+
+- 目标：`/admin/trips`（管理端·旅行管理列表）
+- 打开方式：**新标签页** `<a href="/admin/trips" target="_blank" rel="noopener">`，地图页保留不动
+- 图标文案：维持 📝「去记录」；其余规格（36×36、hover/active/focus、排序、无分隔线）不变
+- 鉴权：未登录时新标签内由既有守卫拦至登录页，登录后落在管理端列表——鉴权链路不变
