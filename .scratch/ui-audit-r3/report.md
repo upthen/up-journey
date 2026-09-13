@@ -63,3 +63,18 @@ commit 沿用 `fix(scope): 描述（#N）`，合并即关闭对应 issue。
   `measure.mjs`（溢出与可达性测量）；本地专用，不影响仓库；
 - 已知环境问题：IAB 截图管线间歇冻结（重开标签/等待可部分恢复），与 r2 记录一致，
   建议后续验收直接默认 headless Chromium + CDP 路径。
+
+## 修复轮（同日）
+
+#34–#38 已全部修复合入 main 并关闭，反馈环 `verify.mjs` 12/12 全绿：
+
+| Issue | 修复分支/合并 | 关键改动 | 390 症状 | PC 闸门 |
+|---|---|---|---|---|
+| #34 | fix/34-admin-narrow-viewport → 625cd43 | `admin.css:26` 轨道 `minmax(0,1fr)`；编辑表单 `:xs="24"` 单列 | scrollWidth 1086/1104→390，表格内部滚动可达操作列 | pc2：1440 布局与基线一致 |
+| #35 | fix/35-page-pad-zero-padding → bdee0ae | `.page-pad` 分写上下；`.wrap` max-width `+2*--pad` 补偿 | padding-left 0→20px | pc1：内容列 1120/h1 left=160 与基线一致（桌面零变化） |
+| #36 | fix/36-map-label-declutter → e6ef064 | 应用层像素聚类，每簇一标签；小屏标签去年份缩字号 | 交叠 5 对→0 | pc4：1440 交叠 2→0（两端一致修复） |
+| #37 | fix/37-lightbox-controls → 85b7f51 | ✕/‹›/N-M 控件条 + 触屏滑动翻页 + role=dialog | 控件齐全 | pc6：桌面同样获得控件（预期增强） |
+| #38 | fix/38-backhome-overlap → 3054788 | ≤640 下滑收起/上滑即回（偏离规范 §2.6 已在 issue 记录理由） | 下滑后 opacity 1→0 | pc5：桌面恒显不变 |
+
+验证脚本：`verify.mjs`（390 症状断言 + 1440 PC 基线闸门，基线 `pc-baseline.json`）；
+修复后证据 `23–27-fixed-*.png`。`vue-tsc` 与生产构建通过。

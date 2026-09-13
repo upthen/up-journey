@@ -1,0 +1,20 @@
+{
+ "p1": {
+  "contentW": 1120,
+  "h1Left": 160,
+  "padL": "0px"
+ },
+ "p34": {
+  "moveOverlap": "shiftY",
+  "hideOverlap": null,
+  "fontSize": 11
+ },
+ "overlapDesktop": {
+  "textCount": 7,
+  "overlaps": [
+   "大理古城 · 2024 × 洱海 · 2024",
+   "四姑娘山 · 双桥沟 · 2 × 宽窄巷子 · 2023"
+  ],
+  "overlapCount": 2
+ }
+}
