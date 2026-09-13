@@ -1,11 +1,18 @@
 <script setup lang="ts">
-/** 地图页侧边操作栏：竖排工具按钮（本期仅「还原视野」，右利手放右缘，#32 用户反馈迭代）。 */
+/** 地图页侧边操作栏：竖排工具按钮（🎯 还原视野 + 📝 去管理端录入，#32 用户反馈迭代）。
+ *  与 NavBall 分工：左上脚印球=前进导航，右下 🎯/📝=地图操作与跳转动作。 */
 const emit = defineEmits<{ (e: 'reset'): void }>()
 </script>
 
 <template>
   <div class="maptb">
     <button class="maptb-btn" aria-label="还原地图视野" title="还原地图视野" @click="emit('reset')">🎯</button>
+    <router-link
+      class="maptb-btn maptb-go"
+      :to="{ name: 'admin-trip-new' }"
+      aria-label="去记录"
+      title="去记录"
+    >📝</router-link>
   </div>
 </template>
 
@@ -51,6 +58,11 @@ const emit = defineEmits<{ (e: 'reset'): void }>()
 .maptb-btn:focus-visible {
   outline: 2px solid var(--coral-deep);
   outline-offset: 2px;
+}
+.maptb-go {
+  /* router-link 渲染为 <a>，复位浏览器默认，使其与 .maptb-btn 的 button 外观一致 */
+  text-decoration: none;
+  color: inherit;
 }
 @media (prefers-reduced-motion: reduce) {
   .maptb-btn {
