@@ -15,8 +15,8 @@ export default defineConfig({
       injectRegister: 'auto',
       includeAssets: ['favicon.svg', 'favicon.ico', 'apple-touch-icon.png'],
       manifest: {
-        name: '游迹 · Up Journey',
-        short_name: '游迹',
+        name: '足迹 · Up Journey',
+        short_name: '足迹',
         description: '全屏地图上的家庭足迹：家庭旅游记录',
         lang: 'zh-CN',
         theme_color: '#F8F6F2',

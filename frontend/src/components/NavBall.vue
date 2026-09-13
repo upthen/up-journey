@@ -46,14 +46,25 @@ onUnmounted(() => {
       title="导航菜单"
       @click="open = !open"
     >
-      🧭
+      <svg class="nb-feet" viewBox="45 47 422 418" aria-hidden="true">
+        <g fill="currentColor" transform="translate(256 256) scale(1.1) translate(-256 -256)">
+          <g transform="translate(169 268) rotate(-10)">
+            <ellipse cx="0" cy="-45" rx="60" ry="78"/>
+            <circle cx="0" cy="58" r="40"/>
+          </g>
+          <g transform="translate(341 292) rotate(12)">
+            <ellipse cx="0" cy="-34" rx="45" ry="60"/>
+            <circle cx="0" cy="44" r="30"/>
+          </g>
+        </g>
+      </svg>
     </button>
     <div id="nb-menu" class="nb-menu" :class="{ open }">
       <router-link to="/" :class="{ active: active === 'map' }" :aria-current="active === 'map' ? 'page' : undefined">地图</router-link>
       <router-link to="/timeline" :class="{ active: active === 'timeline' }" :aria-current="active === 'timeline' ? 'page' : undefined">编年</router-link>
       <router-link to="/list" :class="{ active: active === 'list' }" :aria-current="active === 'list' ? 'page' : undefined">游记名录</router-link>
       <span class="nb-sep" aria-hidden="true"></span>
-      <span class="nb-brand">游迹</span>
+      <span class="nb-brand">足迹</span>
     </div>
   </nav>
 </template>
@@ -79,13 +90,17 @@ onUnmounted(() => {
   border-radius: 50%;
   background: var(--coral);
   color: #fff;
-  font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   box-shadow: var(--shadow);
   transition: 0.18s;
+}
+.nb-feet {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 @media (hover: hover) {
   .nb-ball:hover {

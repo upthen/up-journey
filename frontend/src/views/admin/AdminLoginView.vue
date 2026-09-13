@@ -51,8 +51,21 @@ async function submit() {
 <template>
   <div class="login-wrap">
     <form class="login-card" @submit.prevent="submit">
-      <div class="mark">🧭</div>
-      <h1>游迹 · 管理端</h1>
+      <div class="mark">
+        <svg class="mark-feet" viewBox="45 47 422 418" aria-hidden="true">
+          <g fill="currentColor" transform="translate(256 256) scale(1.1) translate(-256 -256)">
+            <g transform="translate(169 268) rotate(-10)">
+              <ellipse cx="0" cy="-45" rx="60" ry="78"/>
+              <circle cx="0" cy="58" r="40"/>
+            </g>
+            <g transform="translate(341 292) rotate(12)">
+              <ellipse cx="0" cy="-34" rx="45" ry="60"/>
+              <circle cx="0" cy="44" r="30"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <h1>足迹 · 管理端</h1>
       <p class="sub">家庭记录者的入口——展示端无需登录，这里需要管理员密码。</p>
       <el-input
         v-model="password"
@@ -103,12 +116,12 @@ async function submit() {
   border-radius: 16px;
   background: var(--coral);
   color: #fff;
-  font-size: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 14px;
 }
+.mark-feet { width: 100%; height: 100%; display: block; }
 .login-card h1 {
   font-size: 20px;
   text-align: center;
