@@ -1,17 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- 足迹 logo：珊瑚圆角方底（rx 128，系统裁圆即"圆底"）+ 白色双脚印（左大右小，亲子并肩）；
-       规格见 .scratch/feature-32-brand-footprints/design.md -->
+  <!-- 足迹 logo：珊瑚圆角方底（rx 128，系统裁圆即"圆底"）+ 白色双脚印（左大右小，亲子并肩）。
+       每只脚 = 卵形脚掌 + 5 颗独立脚趾圆（拇趾大、小趾小，弧线环抱脚掌顶），光脚丫印；
+       规格见 .scratch/feature-32-brand-footprints/design.md（#32 用户反馈迭代） -->
   <rect width="512" height="512" rx="128" fill="#E8683A"/>
-  <g transform="translate(256 256) scale(1.1) translate(-256 -256)">
-    <!-- 成人脚（左 · 大）：脚掌长椭圆 + 足跟圆重叠成足弓，外八 -10° -->
-    <g fill="#FFFFFF" transform="translate(169 268) rotate(-10)">
-      <ellipse cx="0" cy="-45" rx="60" ry="78"/>
-      <circle cx="0" cy="58" r="40"/>
-    </g>
-    <!-- 儿童脚（右 · 小 = 0.76 倍）：外八 +12°，与成人脚跟同基线 -->
-    <g fill="#FFFFFF" transform="translate(341 292) rotate(12)">
-      <ellipse cx="0" cy="-34" rx="45" ry="60"/>
-      <circle cx="0" cy="44" r="30"/>
-    </g>
+  <!-- 成人脚（左 · 大）：拇趾朝内（+x），外八 -8° -->
+  <g fill="#FFFFFF" transform="translate(180 246) rotate(-8)">
+    <ellipse cx="4" cy="45" rx="58" ry="95"/>
+    <circle cx="30" cy="-72" r="27"/>
+    <circle cx="-18" cy="-82" r="22"/>
+    <circle cx="-56" cy="-76" r="19"/>
+    <circle cx="-82" cy="-52" r="17"/>
+    <circle cx="-96" cy="-22" r="15"/>
+  </g>
+  <!-- 儿童脚（右 · 小 = 0.76 倍，镜像使拇趾朝内）：脚跟与成人脚同基线 -->
+  <g fill="#FFFFFF" transform="translate(356 279) scale(-0.76 0.76) rotate(-8)">
+    <ellipse cx="4" cy="45" rx="58" ry="95"/>
+    <circle cx="30" cy="-72" r="27"/>
+    <circle cx="-18" cy="-82" r="22"/>
+    <circle cx="-56" cy="-76" r="19"/>
+    <circle cx="-82" cy="-52" r="17"/>
+    <circle cx="-96" cy="-22" r="15"/>
   </g>
 </svg>
