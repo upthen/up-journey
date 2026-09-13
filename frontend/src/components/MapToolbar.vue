@@ -7,12 +7,14 @@ const emit = defineEmits<{ (e: 'reset'): void }>()
 <template>
   <div class="maptb">
     <button class="maptb-btn" aria-label="还原地图视野" title="还原地图视野" @click="emit('reset')">🎯</button>
-    <router-link
+    <a
       class="maptb-btn maptb-go"
-      :to="{ name: 'admin-trip-new' }"
+      href="/admin/trips"
+      target="_blank"
+      rel="noopener"
       aria-label="去记录"
       title="去记录"
-    >📝</router-link>
+    >📝</a>
   </div>
 </template>
 
