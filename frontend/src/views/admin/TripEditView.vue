@@ -639,8 +639,8 @@ onMounted(async () => {
       <p class="hint">标题用于展示与卡片；slug 决定详情页地址，留空按标题自动生成。</p>
       <el-form label-width="110px">
         <el-row :gutter="16">
-          <el-col :span="12"><el-form-item label="标题" required><el-input v-model="form.title" maxlength="128" /></el-form-item></el-col>
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12"><el-form-item label="标题" required><el-input v-model="form.title" maxlength="128" /></el-form-item></el-col>
+          <el-col :xs="24" :sm="12">
               <el-form-item label="Slug">
                 <el-input v-model="form.slug" maxlength="64" placeholder="自动生成" />
                 <p v-if="slugChanged" class="warn-hint hint">⚠️ 修改 slug 后，旧链接 /trip/{{ originalSlug }} 将失效。</p>
@@ -648,7 +648,7 @@ onMounted(async () => {
             </el-col>
         </el-row>
         <el-row :gutter="16">
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="起止日期" required>
               <el-date-picker
                 v-model="form.dates"
@@ -660,7 +660,7 @@ onMounted(async () => {
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="状态">
               <el-select v-model="form.status" style="width: 160px">
                 <el-option label="已发布" value="published" />
@@ -670,7 +670,7 @@ onMounted(async () => {
           </el-col>
         </el-row>
         <el-row :gutter="16">
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="境内 / 境外">
               <el-radio-group v-model="form.isForeign">
                 <el-radio-button :value="false">境内</el-radio-button>
@@ -678,7 +678,7 @@ onMounted(async () => {
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col v-if="form.isForeign" :span="12">
+          <el-col v-if="form.isForeign" :xs="24" :sm="12">
             <el-form-item label="国家" required><el-input v-model="form.country" maxlength="32" placeholder="如 日本" /></el-form-item>
           </el-col>
         </el-row>
