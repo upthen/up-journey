@@ -307,6 +307,28 @@ img { display: block; max-width: 100%; }
 }
 .lightbox .cap { position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,.75); font-size: 13px; }
 
+/* 灯箱控件条（#37）：关闭/翻页/计数，所有端可见；触屏另有横向滑动翻页 */
+.lightbox .lb-close,
+.lightbox .lb-nav {
+  position: absolute; z-index: 1;
+  width: 44px; height: 44px;                /* 触屏热区 ≥44px */
+  border: none; border-radius: 999px;
+  background: rgba(255, 255, 255, .12);
+  color: #fff; font-size: 20px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .18s;
+}
+.lightbox .lb-close:hover, .lightbox .lb-nav:hover { background: var(--coral); }
+.lightbox .lb-close { top: 16px; right: 16px; font-size: 17px; }
+.lightbox .lb-prev { left: 12px; top: 50%; translate: 0 -50%; }
+.lightbox .lb-next { right: 12px; top: 50%; translate: 0 -50%; }
+.lightbox .lb-count {
+  position: absolute; bottom: 20px; left: 0; right: 0; margin: 0;
+  text-align: center; color: rgba(255,255,255,.85); font-size: 13px;
+  letter-spacing: .08em; font-variant-numeric: tabular-nums;
+}
+@media (prefers-reduced-motion: reduce) { .lightbox .lb-close, .lightbox .lb-nav { transition: none; } }
+
 /* 空态 / 载入 */
 .empty {
   text-align: center; padding: 64px 24px; color: var(--gray);
