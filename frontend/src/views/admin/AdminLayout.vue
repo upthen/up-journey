@@ -41,7 +41,7 @@ onMounted(async () => {
         <g fill="currentColor" transform="translate(180 246) rotate(-8)">
           <ellipse cx="4" cy="45" rx="58" ry="95"/>
           <circle cx="30" cy="-72" r="27"/>
-          <circle cx="-18" cy="-88" r="22"/>
+          <circle cx="-18" cy="-82" r="22"/>
           <circle cx="-56" cy="-76" r="19"/>
           <circle cx="-82" cy="-52" r="17"/>
           <circle cx="-96" cy="-22" r="15"/>
@@ -49,7 +49,7 @@ onMounted(async () => {
         <g fill="currentColor" transform="translate(356 279) scale(-0.76 0.76) rotate(-8)">
           <ellipse cx="4" cy="45" rx="58" ry="95"/>
           <circle cx="30" cy="-72" r="27"/>
-          <circle cx="-18" cy="-88" r="22"/>
+          <circle cx="-18" cy="-82" r="22"/>
           <circle cx="-56" cy="-76" r="19"/>
           <circle cx="-82" cy="-52" r="17"/>
           <circle cx="-96" cy="-22" r="15"/>
