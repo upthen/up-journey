@@ -38,7 +38,7 @@ const openSpot = ref<Spot | null>(null)
 
 const mapEl = ref<HTMLDivElement>()
 const chart = shallowRef<echarts.ECharts>()
-let resizeHandler = () => chart.value?.resize()
+let resizeHandler = () => { chart.value?.resize(); relayoutLabelsSoon() }
 
 const kicker = computed(() => {
   const years = footprints.value?.years ?? []
@@ -53,11 +53,16 @@ const yearSpots = computed(() => (footprints.value?.spots ?? []).filter((s) => c
 const yearAbroad = computed(() => (footprints.value?.abroad_trips ?? []).filter((a) => currentYear.value === 'all' || a.year === currentYear.value))
 
 /* ---------- 地图 ---------- */
+// 相邻景点标签防叠（#36）：ECharts labelLayout 的 shiftY/hideOverlap 在 geo 散点上不可靠
+// （隔离实验正常、真实图无效），改为应用层按当前像素投影聚类——每簇只保留一个标签。
+// 被藏标签的景点圆点与 28px 命中层都在（#17），点击面板与 tooltip 的名字入口不丢。
+const labelHidden = ref<Set<string>>(new Set())
+
 function spotData(year: 'all' | number) {
   const spots = footprints.value?.spots ?? []
   return spots
     .filter((s) => year === 'all' || s.year === year)
-    .map((s) => ({ name: s.name, value: [s.lng, s.lat, s.photo_count], spot: s }))
+    .map((s) => ({ name: s.name, value: [s.lng, s.lat, s.photo_count], spot: s, label: { show: !labelHidden.value.has(s.name) } }))
 }
 function lineData(year: 'all' | number) {
   const out: { coords: [number, number][] }[] = []
@@ -77,7 +82,43 @@ function provinceData(year: 'all' | number) {
   }))
 }
 
+/** 按当前像素投影聚类标签：标签框两两求交，同簇只留列表序最先的一个，其余隐藏（#36）。 */
+function relayoutLabels() {
+  const c = chart.value
+  if (!c || !yearSpots.value.length) return
+  const fontSize = window.innerWidth < 640 ? 10 : 11
+  const boxes: { name: string; x: number; y: number; w: number; h: number }[] = []
+  for (const s of yearSpots.value) {
+    const px = c.convertToPixel({ geoIndex: 0 }, [s.lng, s.lat]) as number[] | null
+    if (!px) continue
+    const w = s.name.length * fontSize + 24 // 文字宽 + 背景水平 padding 14 + 余量
+    boxes.push({ name: s.name, x: px[0] - w / 2, y: px[1] - 26, w, h: 18 }) // 标签挂在圆点上方
+  }
+  const hidden = new Set<string>()
+  for (let i = 0; i < boxes.length; i++) {
+    if (hidden.has(boxes[i].name)) continue
+    for (let j = i + 1; j < boxes.length; j++) {
+      if (hidden.has(boxes[j].name)) continue
+      const a = boxes[i]
+      const b = boxes[j]
+      const ox = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)
+      const oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y)
+      if (ox > 2 && oy > 2) hidden.add(b.name)
+    }
+  }
+  if ([...hidden].sort().join() !== [...labelHidden.value].sort().join()) {
+    labelHidden.value = hidden
+    applyYearFilter() // 重新下发 per-datum label.show
+  }
+}
+let relayoutTimer: ReturnType<typeof setTimeout> | undefined
+function relayoutLabelsSoon() {
+  clearTimeout(relayoutTimer)
+  relayoutTimer = setTimeout(relayoutLabels, 200) // roam/缩放连续触发时去抖
+}
+
 function buildOption(): echarts.EChartsOption {
+  const compact = window.innerWidth < 640 // 小屏标签减负与隐藏兜底（#36）；地图页装载时判定，桌面端不受影响
   return {
     tooltip: {
       trigger: 'item',
@@ -136,13 +177,15 @@ function buildOption(): echarts.EChartsOption {
         label: {
           show: true,
           position: 'top',
-          distance: 7,
+          distance: compact ? 5 : 7,
           formatter: (p: { data?: unknown }) => {
             const d = p.data as { spot?: Spot } | null | undefined
-            return d?.spot ? `${d.spot.name} · ${d.spot.year}` : ''
+            if (!d?.spot) return ''
+            // 小屏去掉「· 年份」：地理相近的景点投影后只差几个像素，长标签必然叠字（#36）
+            return compact ? d.spot.name : `${d.spot.name} · ${d.spot.year}`
           },
           color: '#3E4C57',
-          fontSize: 11,
+          fontSize: compact ? 10 : 11,
           fontWeight: 600,
           backgroundColor: 'rgba(255,255,255,.85)',
           borderRadius: 6,
@@ -150,7 +193,8 @@ function buildOption(): echarts.EChartsOption {
           shadowColor: 'rgba(31,42,51,.10)',
           shadowBlur: 6,
         },
-        labelLayout: { moveOverlap: 'shiftY' }, // 错开而非隐藏：被藏标签的景点会失去唯一入口（#17）
+        // shiftY 留作引擎侧尽力而为；真正保证不叠字的是上面 relayoutLabels 的应用层聚类（#36）
+        labelLayout: { moveOverlap: 'shiftY' },
         cursor: 'pointer',
         data: spotData('all'),
       },
@@ -186,6 +230,7 @@ function applyYearFilter() {
       { data: lineData(currentYear.value) },
     ],
   })
+  relayoutLabelsSoon() // 年份切换后像素位置变化，重算标签聚类（#36）
 }
 
 function selectYear(y: 'all' | number) {
@@ -255,6 +300,8 @@ async function loadMap() {
       const d = params.data as { spot?: Spot } | null | undefined
       if (d?.spot) openPanel(d.spot)  // 命中层/涟漪层任一命中都开面板（#17）
     })
+    chart.value.on('geoRoam', relayoutLabelsSoon) // 拖拽/缩放/还原视野后重算标签聚类（#36）
+    setTimeout(relayoutLabels, 900) // 首帧布局与视野动画落定后再聚类一次
     window.addEventListener('resize', resizeHandler)
   } catch {
     mapError.value = true
