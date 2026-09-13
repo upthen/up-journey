@@ -34,7 +34,6 @@ const stats = ref<Stats | null>(null)
 const footprints = ref<Footprints | null>(null)
 const currentYear = ref<'all' | number>('all')
 const veilGone = ref(false)
-const hintGone = ref(true)
 const openSpot = ref<Spot | null>(null)
 
 const mapEl = ref<HTMLDivElement>()
@@ -196,7 +195,6 @@ function selectYear(y: 'all' | number) {
 
 function openPanel(spot: Spot) {
   openSpot.value = spot
-  hintGone.value = true
   chart.value?.dispatchAction({ type: 'hideTip' }) // 悬停 tooltip 不随面板驻留（#23）
 }
 function closePanel() {
@@ -231,13 +229,9 @@ function resetView() {
   restoreRaf = requestAnimationFrame(step)
 }
 
-/** 帷幕收起 → 地图探索提示停留 7 秒后淡出。 */
+/** 帷幕收起 → 进入地图。 */
 function enterMap() {
   veilGone.value = true
-  hintGone.value = false
-  window.setTimeout(() => {
-    hintGone.value = true
-  }, 7000)
 }
 
 /* ---------- 生命周期 ---------- */
@@ -336,7 +330,6 @@ function hideImg(e: Event) {
     </div>
 
     <!-- 探索提示 -->
-    <div class="map-hint" :class="{ gone: hintGone }">👆 点一点地图上的景点标签——每个地点背后，都是一次旅行</div>
 
     <!-- 第二幕：地点故事面板 -->
     <aside v-if="openSpot" class="panel open">

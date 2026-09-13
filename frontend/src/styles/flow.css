@@ -144,15 +144,6 @@ img { display: block; max-width: 100%; }
 }
 .panel .cta:hover { background: var(--coral-deep); }
 
-/* 地图提示 toast（仅展示端地图页使用；.hint 为管理端面板内普通说明文字保留） */
-.map-hint {
-  position: fixed; top: 78px; left: 50%; transform: translateX(-50%); z-index: 40;
-  font-size: 13px; color: var(--ink); background: rgba(255,255,255,.94);
-  backdrop-filter: blur(10px); border-radius: 999px; padding: 9px 20px;
-  box-shadow: var(--shadow); transition: opacity .5s; white-space: nowrap;
-}
-.map-hint.gone { opacity: 0; pointer-events: none; }
-
 /* ---------- 第三幕：游记页（复用 v3 结构，加返回地图） ---------- */
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
 .back-map {
@@ -251,7 +242,6 @@ img { display: block; max-width: 100%; }
   .g-grid .ph:nth-child(1) { grid-column: span 2; grid-row: span 1; }
   .j-row { grid-template-columns: 1fr; }
   .j-row .ph { min-height: 190px; aspect-ratio: 16/9; }
-  .map-hint { white-space: normal; text-align: center; max-width: 86vw; }
 }
 
 /* ---------- 编年时间轴（timeline.html） ---------- */
