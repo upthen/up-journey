@@ -339,7 +339,7 @@ function hideImg(e: Event) {
         </router-link>
       </template>
       <span v-else class="t">
-        🧭 {{ currentYear === 'all' ? '还没有足迹——' : currentYear + ' 年暂无境内足迹——' }}
+        👣 {{ currentYear === 'all' ? '还没有足迹——' : currentYear + ' 年暂无境内足迹——' }}
         <router-link to="/admin">去录入游记 →</router-link>
       </span>
     </div>
