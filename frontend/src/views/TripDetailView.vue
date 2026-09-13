@@ -5,7 +5,7 @@ import { computed, onMounted, onUnmounted, ref, shallowRef, watchEffect } from '
 import { useRoute } from 'vue-router'
 
 import { api, photoUrl } from '@/api'
-import DisplayNav from '@/components/DisplayNav.vue'
+import NavBall from '@/components/NavBall.vue'
 import { lightbox } from '@/composables/lightbox'
 import type { TripDetail } from '@/types'
 import { dateRange, mdDate, memberLabel } from '@/utils/format'
@@ -147,9 +147,8 @@ function hideImg(e: Event) {
 
 <template>
   <div>
-    <DisplayNav active="list" />
+    <NavBall active="list" />
     <main v-if="trip" class="wrap page-pad">
-      <router-link class="back-map" to="/">← 回到地图</router-link>
 
       <section class="trip-hero">
         <div class="ph">

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 
+import BackHome from '@/components/BackHome.vue'
 import { lightbox, MIN_SCALE, WHEEL_STEP } from '@/composables/lightbox'
 
 function onKey(e: KeyboardEvent) {
@@ -143,10 +144,14 @@ function onOverlayClick() {
 
 <template>
   <router-view />
+  <BackHome />
   <div
     v-if="lightbox.show"
     class="lightbox"
     :class="{ 'is-errored': lightbox.errored }"
+    role="dialog"
+    aria-modal="true"
+    aria-label="照片查看器"
     @click="onOverlayClick"
     @wheel.prevent="onWheel"
     @touchstart="onTouchStart"

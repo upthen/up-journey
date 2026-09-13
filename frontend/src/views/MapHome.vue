@@ -7,8 +7,14 @@ import * as echarts from 'echarts'
 import { computed, onMounted, onUnmounted, ref, shallowRef } from 'vue'
 
 import { api, photoUrl } from '@/api'
-import DisplayNav from '@/components/DisplayNav.vue'
+import MapToolbar from '@/components/MapToolbar.vue'
+import NavBall from '@/components/NavBall.vue'
 import type { Footprints, Spot, Stats } from '@/types'
+
+/** 地图初始视野（还原按钮与首次渲染共用，#31） */
+const INITIAL_CENTER: [number, number] = [110, 33]
+const INITIAL_ZOOM = 1.15
+const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /* ---------- ADR-0001 设计 Token：地图配色 ---------- */
 const T = {
@@ -28,12 +34,11 @@ const stats = ref<Stats | null>(null)
 const footprints = ref<Footprints | null>(null)
 const currentYear = ref<'all' | number>('all')
 const veilGone = ref(false)
-const hintGone = ref(true)
 const openSpot = ref<Spot | null>(null)
 
 const mapEl = ref<HTMLDivElement>()
 const chart = shallowRef<echarts.ECharts>()
-let resizeHandler = () => chart.value?.resize()
+let resizeHandler = () => { chart.value?.resize(); relayoutLabelsSoon() }
 
 const kicker = computed(() => {
   const years = footprints.value?.years ?? []
@@ -48,11 +53,16 @@ const yearSpots = computed(() => (footprints.value?.spots ?? []).filter((s) => c
 const yearAbroad = computed(() => (footprints.value?.abroad_trips ?? []).filter((a) => currentYear.value === 'all' || a.year === currentYear.value))
 
 /* ---------- 地图 ---------- */
+// 相邻景点标签防叠（#36）：ECharts labelLayout 的 shiftY/hideOverlap 在 geo 散点上不可靠
+// （隔离实验正常、真实图无效），改为应用层按当前像素投影聚类——每簇只保留一个标签。
+// 被藏标签的景点圆点与 28px 命中层都在（#17），点击面板与 tooltip 的名字入口不丢。
+const labelHidden = ref<Set<string>>(new Set())
+
 function spotData(year: 'all' | number) {
   const spots = footprints.value?.spots ?? []
   return spots
     .filter((s) => year === 'all' || s.year === year)
-    .map((s) => ({ name: s.name, value: [s.lng, s.lat, s.photo_count], spot: s }))
+    .map((s) => ({ name: s.name, value: [s.lng, s.lat, s.photo_count], spot: s, label: { show: !labelHidden.value.has(s.name) } }))
 }
 function lineData(year: 'all' | number) {
   const out: { coords: [number, number][] }[] = []
@@ -72,7 +82,43 @@ function provinceData(year: 'all' | number) {
   }))
 }
 
+/** 按当前像素投影聚类标签：标签框两两求交，同簇只留列表序最先的一个，其余隐藏（#36）。 */
+function relayoutLabels() {
+  const c = chart.value
+  if (!c || !yearSpots.value.length) return
+  const fontSize = window.innerWidth < 640 ? 10 : 11
+  const boxes: { name: string; x: number; y: number; w: number; h: number }[] = []
+  for (const s of yearSpots.value) {
+    const px = c.convertToPixel({ geoIndex: 0 }, [s.lng, s.lat]) as number[] | null
+    if (!px) continue
+    const w = s.name.length * fontSize + 24 // 文字宽 + 背景水平 padding 14 + 余量
+    boxes.push({ name: s.name, x: px[0] - w / 2, y: px[1] - 26, w, h: 18 }) // 标签挂在圆点上方
+  }
+  const hidden = new Set<string>()
+  for (let i = 0; i < boxes.length; i++) {
+    if (hidden.has(boxes[i].name)) continue
+    for (let j = i + 1; j < boxes.length; j++) {
+      if (hidden.has(boxes[j].name)) continue
+      const a = boxes[i]
+      const b = boxes[j]
+      const ox = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)
+      const oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y)
+      if (ox > 2 && oy > 2) hidden.add(b.name)
+    }
+  }
+  if ([...hidden].sort().join() !== [...labelHidden.value].sort().join()) {
+    labelHidden.value = hidden
+    applyYearFilter() // 重新下发 per-datum label.show
+  }
+}
+let relayoutTimer: ReturnType<typeof setTimeout> | undefined
+function relayoutLabelsSoon() {
+  clearTimeout(relayoutTimer)
+  relayoutTimer = setTimeout(relayoutLabels, 200) // roam/缩放连续触发时去抖
+}
+
 function buildOption(): echarts.EChartsOption {
+  const compact = window.innerWidth < 640 // 小屏标签减负与隐藏兜底（#36）；地图页装载时判定，桌面端不受影响
   return {
     tooltip: {
       trigger: 'item',
@@ -106,8 +152,8 @@ function buildOption(): echarts.EChartsOption {
       map: 'china',
       roam: true,
       scaleLimit: { min: 1, max: 14 },
-      center: [110, 33],
-      zoom: 1.15,
+      center: INITIAL_CENTER,
+      zoom: INITIAL_ZOOM,
       itemStyle: { borderColor: T.border, borderWidth: 1.2 },
       emphasis: { label: { color: T.label }, itemStyle: { areaColor: T.emphasis } },
       select: { disabled: true },
@@ -131,13 +177,15 @@ function buildOption(): echarts.EChartsOption {
         label: {
           show: true,
           position: 'top',
-          distance: 7,
+          distance: compact ? 5 : 7,
           formatter: (p: { data?: unknown }) => {
             const d = p.data as { spot?: Spot } | null | undefined
-            return d?.spot ? `${d.spot.name} · ${d.spot.year}` : ''
+            if (!d?.spot) return ''
+            // 小屏去掉「· 年份」：地理相近的景点投影后只差几个像素，长标签必然叠字（#36）
+            return compact ? d.spot.name : `${d.spot.name} · ${d.spot.year}`
           },
           color: '#3E4C57',
-          fontSize: 11,
+          fontSize: compact ? 10 : 11,
           fontWeight: 600,
           backgroundColor: 'rgba(255,255,255,.85)',
           borderRadius: 6,
@@ -145,7 +193,8 @@ function buildOption(): echarts.EChartsOption {
           shadowColor: 'rgba(31,42,51,.10)',
           shadowBlur: 6,
         },
-        labelLayout: { moveOverlap: 'shiftY' }, // 错开而非隐藏：被藏标签的景点会失去唯一入口（#17）
+        // shiftY 留作引擎侧尽力而为；真正保证不叠字的是上面 relayoutLabels 的应用层聚类（#36）
+        labelLayout: { moveOverlap: 'shiftY' },
         cursor: 'pointer',
         data: spotData('all'),
       },
@@ -181,6 +230,7 @@ function applyYearFilter() {
       { data: lineData(currentYear.value) },
     ],
   })
+  relayoutLabelsSoon() // 年份切换后像素位置变化，重算标签聚类（#36）
 }
 
 function selectYear(y: 'all' | number) {
@@ -190,20 +240,43 @@ function selectYear(y: 'all' | number) {
 
 function openPanel(spot: Spot) {
   openSpot.value = spot
-  hintGone.value = true
   chart.value?.dispatchAction({ type: 'hideTip' }) // 悬停 tooltip 不随面板驻留（#23）
 }
 function closePanel() {
   openSpot.value = null
 }
 
-/** 帷幕收起 → 地图探索提示停留 7 秒后淡出。 */
+/** 一键还原初始视野（#31）：ECharts 对 geo center/zoom 的 setOption 变更不走动画（根级动画参数也不生效），
+ *  用 rAF 按 cubicOut 插值手写 450ms 过渡；reduced-motion 直接落位。 */
+const RESTORE_MS = 450
+let restoreRaf = 0
+function resetView() {
+  const inst = chart.value
+  if (!inst) return
+  cancelAnimationFrame(restoreRaf)
+  const finish = () => inst.setOption({ geo: { center: INITIAL_CENTER, zoom: INITIAL_ZOOM } })
+  if (REDUCE_MOTION) return finish()
+  const start = (inst.getOption() as { geo?: { center?: number[]; zoom?: number }[] }).geo?.[0] ?? {}
+  const c0 = (start.center ?? INITIAL_CENTER) as [number, number]
+  const z0 = start.zoom ?? INITIAL_ZOOM
+  const t0 = performance.now()
+  const step = (now: number) => {
+    const k = Math.min(1, (now - t0) / RESTORE_MS)
+    const e = 1 - Math.pow(1 - k, 3) // cubicOut
+    inst.setOption({
+      geo: {
+        center: [c0[0] + (INITIAL_CENTER[0] - c0[0]) * e, c0[1] + (INITIAL_CENTER[1] - c0[1]) * e],
+        zoom: z0 + (INITIAL_ZOOM - z0) * e,
+      },
+    })
+    if (k < 1) restoreRaf = requestAnimationFrame(step)
+  }
+  restoreRaf = requestAnimationFrame(step)
+}
+
+/** 帷幕收起 → 进入地图。 */
 function enterMap() {
   veilGone.value = true
-  hintGone.value = false
-  window.setTimeout(() => {
-    hintGone.value = true
-  }, 7000)
 }
 
 /* ---------- 生命周期 ---------- */
@@ -227,6 +300,8 @@ async function loadMap() {
       const d = params.data as { spot?: Spot } | null | undefined
       if (d?.spot) openPanel(d.spot)  // 命中层/涟漪层任一命中都开面板（#17）
     })
+    chart.value.on('geoRoam', relayoutLabelsSoon) // 拖拽/缩放/还原视野后重算标签聚类（#36）
+    setTimeout(relayoutLabels, 900) // 首帧布局与视野动画落定后再聚类一次
     window.addEventListener('resize', resizeHandler)
   } catch {
     mapError.value = true
@@ -236,6 +311,7 @@ async function loadMap() {
 onMounted(loadMap)
 
 onUnmounted(() => {
+  cancelAnimationFrame(restoreRaf)
   window.removeEventListener('resize', resizeHandler)
   chart.value?.dispose()
 })
@@ -246,7 +322,8 @@ function hideImg(e: Event) {
 
 <template>
   <div>
-    <DisplayNav active="map" />
+    <NavBall active="map" />
+    <MapToolbar @reset="resetView" />
 
     <!-- 第 0 幕：开场帷幕 -->
     <div class="veil" :class="{ gone: veilGone }">
@@ -277,15 +354,6 @@ function hideImg(e: Event) {
       <span class="row"><span class="v">{{ stats.trips }}</span><span class="k">次出发 · {{ stats.days }} 天在路上</span></span>
     </aside>
 
-    <!-- 探索路径指示 -->
-    <div class="stage-chip"><b>01</b> 地图 <span class="sep"></span> 找一个想看的地方 <span class="sep"></span> <span style="color: var(--gray)">02 地点 → 03 游记</span></div>
-
-    <!-- 图例 -->
-    <div class="legend-chip">
-      <span><i :style="{ background: T.visited3 }"></i>省份越深去得越多</span>
-      <span><i :style="{ background: T.cityDot }"></i>景点 · 点击看故事</span>
-    </div>
-
     <!-- 年份坞 -->
     <div v-if="footprints?.years.length" class="year-dock">
       <button :class="{ all: true, on: currentYear === 'all' }" @click="selectYear('all')">全部 {{ headlineYears > 0 ? headlineYears + ' 年' : '足迹' }}</button>
@@ -303,13 +371,12 @@ function hideImg(e: Event) {
         </router-link>
       </template>
       <span v-else class="t">
-        🧭 {{ currentYear === 'all' ? '还没有足迹——' : currentYear + ' 年暂无境内足迹——' }}
+        👣 {{ currentYear === 'all' ? '还没有足迹——' : currentYear + ' 年暂无境内足迹——' }}
         <router-link to="/admin">去录入游记 →</router-link>
       </span>
     </div>
 
     <!-- 探索提示 -->
-    <div class="map-hint" :class="{ gone: hintGone }">👆 点一点地图上的景点标签——每个地点背后，都是一次旅行</div>
 
     <!-- 第二幕：地点故事面板 -->
     <aside v-if="openSpot" class="panel open">

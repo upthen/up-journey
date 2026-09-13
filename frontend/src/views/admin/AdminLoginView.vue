@@ -51,8 +51,27 @@ async function submit() {
 <template>
   <div class="login-wrap">
     <form class="login-card" @submit.prevent="submit">
-      <div class="mark">🧭</div>
-      <h1>游迹 · 管理端</h1>
+      <div class="mark">
+        <svg class="mark-feet" viewBox="56 118 400 278" aria-hidden="true">
+        <g fill="currentColor" transform="translate(180 246) rotate(-8)">
+          <ellipse cx="4" cy="45" rx="58" ry="95"/>
+          <circle cx="30" cy="-72" r="27"/>
+          <circle cx="-18" cy="-82" r="22"/>
+          <circle cx="-56" cy="-76" r="19"/>
+          <circle cx="-82" cy="-52" r="17"/>
+          <circle cx="-96" cy="-22" r="15"/>
+        </g>
+        <g fill="currentColor" transform="translate(356 279) scale(-0.76 0.76) rotate(-8)">
+          <ellipse cx="4" cy="45" rx="58" ry="95"/>
+          <circle cx="30" cy="-72" r="27"/>
+          <circle cx="-18" cy="-82" r="22"/>
+          <circle cx="-56" cy="-76" r="19"/>
+          <circle cx="-82" cy="-52" r="17"/>
+          <circle cx="-96" cy="-22" r="15"/>
+        </g>
+      </svg>
+      </div>
+      <h1>足迹 · 管理端</h1>
       <p class="sub">家庭记录者的入口——展示端无需登录，这里需要管理员密码。</p>
       <el-input
         v-model="password"
@@ -103,12 +122,12 @@ async function submit() {
   border-radius: 16px;
   background: var(--coral);
   color: #fff;
-  font-size: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 14px;
 }
+.mark-feet { width: 100%; height: 100%; display: block; }
 .login-card h1 {
   font-size: 20px;
   text-align: center;

@@ -4,7 +4,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { api, photoUrl } from '@/api'
-import DisplayNav from '@/components/DisplayNav.vue'
+import NavBall from '@/components/NavBall.vue'
 import { dateRange, memberLabel } from '@/utils/format'
 import type { TripCard } from '@/types'
 
@@ -44,13 +44,13 @@ function hideImg(e: Event) {
 
 <template>
   <div>
-    <DisplayNav active="list" />
+    <NavBall active="list" />
     <main class="wrap page-pad">
       <section class="page-head">
-        <p class="kicker">Journal · 逃生口</p>
+        <p class="kicker">Journal · 每一次出发</p>
         <h1>游记名录</h1>
         <p class="sub">
-          喜欢按部就班往下翻的人走这里——按时间倒序的共 {{ shown.length }} 篇游记。<router-link
+          按时间倒序收录了 {{ shown.length }} 篇游记。更想按地点找？<router-link
             to="/"
             style="color: var(--coral-deep); font-weight: 600"
             >回到地图探索 →</router-link

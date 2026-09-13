@@ -36,7 +36,26 @@ onMounted(async () => {
     <header class="ad-topbar">
       <div class="ad-topbar-inner">
         <div class="brand">
-          <span class="mark">🧭</span> 游迹 <span class="badge">管理端</span>
+          <span class="mark">
+            <svg class="mark-feet" viewBox="56 118 400 278" aria-hidden="true">
+        <g fill="currentColor" transform="translate(180 246) rotate(-8)">
+          <ellipse cx="4" cy="45" rx="58" ry="95"/>
+          <circle cx="30" cy="-72" r="27"/>
+          <circle cx="-18" cy="-82" r="22"/>
+          <circle cx="-56" cy="-76" r="19"/>
+          <circle cx="-82" cy="-52" r="17"/>
+          <circle cx="-96" cy="-22" r="15"/>
+        </g>
+        <g fill="currentColor" transform="translate(356 279) scale(-0.76 0.76) rotate(-8)">
+          <ellipse cx="4" cy="45" rx="58" ry="95"/>
+          <circle cx="30" cy="-72" r="27"/>
+          <circle cx="-18" cy="-82" r="22"/>
+          <circle cx="-56" cy="-76" r="19"/>
+          <circle cx="-82" cy="-52" r="17"/>
+          <circle cx="-96" cy="-22" r="15"/>
+        </g>
+      </svg>
+          </span> 足迹 <span class="badge">管理端</span>
         </div>
         <div class="flex items-center gap-4">
           <a v-if="authed" href="#" style="font-size: 13px; color: var(--ink-2)" @click.prevent="logout">退出登录</a>
@@ -48,8 +67,6 @@ onMounted(async () => {
       <aside class="ad-side">
         <nav class="ad-menu">
           <router-link to="/admin/trips" :class="{ active: route.name === 'admin-trips' || route.name === 'admin-trip-edit' || route.name === 'admin-trip-new' }">🗂 旅行管理</router-link>
-          <router-link to="/admin/members" :class="{ active: route.name === 'admin-members' }">👨‍👩‍👦 家庭成员</router-link>
-          <router-link to="/admin/tags" :class="{ active: route.name === 'admin-tags' }">🏷 标签管理</router-link>
         </nav>
       </aside>
       <main class="ad-main">
