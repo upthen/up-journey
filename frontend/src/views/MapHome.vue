@@ -313,15 +313,6 @@ function hideImg(e: Event) {
       <span class="row"><span class="v">{{ stats.trips }}</span><span class="k">次出发 · {{ stats.days }} 天在路上</span></span>
     </aside>
 
-    <!-- 探索路径指示 -->
-    <div class="stage-chip"><b>01</b> 地图 <span class="sep"></span> 找一个想看的地方 <span class="sep"></span> <span style="color: var(--gray)">02 地点 → 03 游记</span></div>
-
-    <!-- 图例 -->
-    <div class="legend-chip">
-      <span><i :style="{ background: T.visited3 }"></i>省份越深去得越多</span>
-      <span><i :style="{ background: T.cityDot }"></i>景点 · 点击看故事</span>
-    </div>
-
     <!-- 年份坞 -->
     <div v-if="footprints?.years.length" class="year-dock">
       <button :class="{ all: true, on: currentYear === 'all' }" @click="selectYear('all')">全部 {{ headlineYears > 0 ? headlineYears + ' 年' : '足迹' }}</button>

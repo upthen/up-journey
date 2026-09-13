@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** 地图页侧边操作栏：竖排工具按钮（本期仅「还原视野」，设计规范见 .scratch/feature-31-map-toolbar/design.md）。 */
+/** 地图页侧边操作栏：竖排工具按钮（本期仅「还原视野」，右利手放右缘，#32 用户反馈迭代）。 */
 const emit = defineEmits<{ (e: 'reset'): void }>()
 </script>
 
@@ -12,7 +12,7 @@ const emit = defineEmits<{ (e: 'reset'): void }>()
 <style scoped>
 .maptb {
   position: fixed;
-  left: 16px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 40;
@@ -20,8 +20,8 @@ const emit = defineEmits<{ (e: 'reset'): void }>()
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 6px;
+  gap: 4px;
+  padding: 4px;
   background: rgba(255, 255, 255, 0.92);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
@@ -30,29 +30,27 @@ const emit = defineEmits<{ (e: 'reset'): void }>()
 }
 .maptb-btn {
   pointer-events: auto;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border: none;
   border-radius: 999px;
   background: transparent;
-  font-size: 18px;
+  font-size: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: 0.18s;
 }
-@media (hover: hover) {
-  .maptb-btn:hover {
-    background: var(--bg);
-  }
+.maptb-btn:hover {
+  background: var(--bg);
 }
 .maptb-btn:active {
   transform: scale(0.94);
 }
 .maptb-btn:focus-visible {
   outline: 2px solid var(--coral-deep);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 @media (prefers-reduced-motion: reduce) {
   .maptb-btn {
@@ -61,7 +59,7 @@ const emit = defineEmits<{ (e: 'reset'): void }>()
 }
 @media (max-width: 640px) {
   .maptb {
-    left: 12px;
+    right: 12px;
   }
 }
 </style>
