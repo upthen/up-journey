@@ -202,7 +202,7 @@ img { display: block; max-width: 100%; }
 .pn .t { font-size: 17px; font-weight: 700; margin-top: 6px; }
 
 /* ---------- 名录页（列表逃生口） ---------- */
-.page-pad { padding: 96px; }
+.page-pad { padding: 72px 0 96px; }
 .page-head .kicker { font-size: 12px; letter-spacing: .22em; color: var(--coral); text-transform: uppercase; font-weight: 700; margin-bottom: 12px; }
 .page-head h1 { font-size: clamp(30px, 5vw, 44px); font-weight: 700; letter-spacing: -.015em; }
 .page-head .sub { margin-top: 10px; color: var(--ink-2); font-size: 15px; }
